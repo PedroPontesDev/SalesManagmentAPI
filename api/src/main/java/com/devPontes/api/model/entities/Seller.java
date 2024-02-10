@@ -14,13 +14,12 @@ import lombok.Data;
 @DiscriminatorValue(value = "vendedor")
 @Entity
 @Table(name = "users")
-public class Seller extends User implements Serializable{
+public class Seller extends User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private double salary;
-	
-	
+
 }

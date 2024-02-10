@@ -1,6 +1,5 @@
 package com.devPontes.api.model.entities;
 
-
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,10 +18,10 @@ public abstract class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private String username;
 	private String password;
 	private String email;
 	private String fullName;
-	
+
 }

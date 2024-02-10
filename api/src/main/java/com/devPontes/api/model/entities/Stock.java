@@ -21,10 +21,9 @@ public class Stock {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private double totalPriceInStock;
-	
+
 	@OneToMany(mappedBy = "stock")
 	@JoinColumn(name = "products_id")
 	private List<Product> products = new ArrayList<>();
-	
-	
+
 }
