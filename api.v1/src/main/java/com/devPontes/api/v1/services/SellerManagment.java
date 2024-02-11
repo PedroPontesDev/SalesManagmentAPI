@@ -7,7 +7,7 @@ public interface SellerManagment {
 
 	SellerDTO findById(Long id);
 
-	SellerDTO registerSeller(SellerDTO seller);
+	SellerDTO registerSeller(SellerDTO seller) throws Exception;
 
 	SellerDTO updateSeller(SellerDTO seller);
 

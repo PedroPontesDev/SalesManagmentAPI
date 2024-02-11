@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api.v1</name>
 	<description>Sales managment API</description>
-<properties>
+	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>

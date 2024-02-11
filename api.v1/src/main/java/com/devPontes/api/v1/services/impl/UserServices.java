@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.SellerDTO;
+import com.devPontes.api.v1.model.entities.Seller;
+import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.repositories.UsersRepositories;
 import com.devPontes.api.v1.services.SellerManagment;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class UserServices implements SellerManagment{
@@ -21,9 +25,12 @@ public class UserServices implements SellerManagment{
 	}
 
 	@Override
-	public SellerDTO registerSeller(SellerDTO seller) {
-		// TODO Auto-generated method stub
-		return null;
+	public SellerDTO registerSeller(SellerDTO sellerDto) throws Exception{
+		if(sellerDto == null) throw new Exception("O vendedor não pode ser criado, verifique os dados e tente novamente! ");
+		var entity = MyMapper.parseObject(sellerDto, Seller.class);
+		userRepositories.save(entity);
+		return MyMapper.parseObject(entity, SellerDTO.class);
+		
 	}
 
 	@Override
