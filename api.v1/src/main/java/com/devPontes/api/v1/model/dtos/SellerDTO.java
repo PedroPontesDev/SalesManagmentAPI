@@ -36,6 +36,8 @@ public class SellerDTO extends RepresentationModel<SellerDTO> implements Seriali
 
 	}
 
+	
+	
 	public Long getId() {
 		return id;
 	}

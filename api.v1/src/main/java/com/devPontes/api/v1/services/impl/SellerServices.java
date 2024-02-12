@@ -57,6 +57,8 @@ public class SellerServices implements SellerManagment {
 			updatedSeller.setFullName(seller.getFullName());
 			updatedSeller.setPassword(seller.getPassword());
 			updatedSeller.setQuantitySales(seller.getQuantitySalesInMonth());
+			updatedSeller.setSalary(seller.getSalary());
+			sellerRepositories.save(updatedSeller);
 			return MyMapper.parseObject(updatedSeller, SellerDTO.class);
 		} else {
 			throw new Exception("");
@@ -76,7 +78,7 @@ public class SellerServices implements SellerManagment {
 
 	@Override
 	public double calculateComission(SellerDTO seller, double comissionValue) throws Exception {
-		if(seller.getQuantitySalesInMonth() >= 50) {
+		if(seller.getQuantitySalesInMonth() >= 10) {
 			Double updatedSalary = seller.getSalary() * comissionValue;
 			seller.setSalary(updatedSalary);
 			return updatedSalary;
@@ -86,10 +88,10 @@ public class SellerServices implements SellerManagment {
 	}
 	
 	public void insertQuantitySalesInSeller(SellerDTO seller, Integer quantitySale) throws Exception {
-		if(seller != null) {
+		if(seller != null && seller.getQuantitySalesInMonth() <= 50) {
 			seller.setQuantitySalesInMonth(quantitySale);
 		} else {
-			throw new Exception("Não foi possivel alterar numero de vendas no mês");
+			throw new Exception("Não foi possivel alterar numero de vendas no mês, verifique se o vendedor já excedeu a cota de vendas");
 		}
 	}
 
