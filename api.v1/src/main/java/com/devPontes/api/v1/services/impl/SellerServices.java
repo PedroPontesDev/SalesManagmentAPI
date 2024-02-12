@@ -77,8 +77,10 @@ public class SellerServices implements SellerManagment {
 	}
 
 	@Override
-	public double calculateComission(SellerDTO seller, double comissionValue) throws Exception {
-		if(seller.getQuantitySalesInMonth() >= 10) {
+	public double calculateComission(Long id, Double comissionValue) throws Exception {
+		var entity = sellerRepositories.findById(id);
+		Seller seller = entity.get();
+		if(seller.getQuantitySales() >= 10) {
 			Double updatedSalary = seller.getSalary() * comissionValue;
 			seller.setSalary(updatedSalary);
 			return updatedSalary;
@@ -92,6 +94,19 @@ public class SellerServices implements SellerManagment {
 			seller.setQuantitySalesInMonth(quantitySale);
 		} else {
 			throw new Exception("Não foi possivel alterar numero de vendas no mês, verifique se o vendedor já excedeu a cota de vendas");
+		}
+	}
+
+	@Override
+	public SellerDTO updateSellerSalary(Long id, Double newSalary) throws Exception {
+		var entity = sellerRepositories.findById(id);
+		if(entity.isPresent()) {
+			Seller seller = entity.get();
+			seller.setSalary(newSalary);
+			sellerRepositories.save(seller);
+			return MyMapper.parseObject(seller, SellerDTO.class);
+		} else {
+			throw new Exception("");
 		}
 	}
 

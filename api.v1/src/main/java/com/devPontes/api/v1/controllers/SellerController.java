@@ -36,25 +36,32 @@ public class SellerController {
 		return new ResponseEntity<>(all, HttpStatus.OK);
 	}
 
-	@Operation(tags = {"Seller"}, description = "Register one seller")
+	@Operation(tags = {"Seller"}, summary = "Register one seller")
 	@PostMapping(path = "/register-seller", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SellerDTO> registerNewSeller(@RequestBody SellerDTO newSeller) throws Exception {
 		var seller = sellerServices.registerSeller(newSeller);
 		return new ResponseEntity<>(seller, HttpStatus.CREATED);
 	}
 	
-	@Operation(tags = {"Seller"}, description = "Update a existent seller")
+	@Operation(tags = {"Seller"}, summary = "Update a existent seller")
 	@PutMapping(path = "/update-seller")
 	public ResponseEntity<SellerDTO> updateExistentSeller(@RequestBody SellerDTO updatedSeller) throws Exception {
 		SellerDTO updated = sellerServices.updateSeller(updatedSeller);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
+	@Operation(tags = {"Seller"}, summary = "Delete one seller")
 	@DeleteMapping(path = "{sellerId}/delete-seller/ ")
 	public ResponseEntity<?> deleteSeller(@PathVariable Long sellerId) throws Exception {
 		sellerServices.deleteSeller(sellerId);
-		return null;
-		
+		return ResponseEntity.noContent().build();
 	}
+	
+	@PutMapping(path = "{id}/update-seller-salary")
+	public ResponseEntity<SellerDTO> updateSalary(@PathVariable Long id, @RequestBody Double newSalary) throws Exception {
+		SellerDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
+		return new ResponseEntity<>(updatedSeller, HttpStatus.OK);
+	}
+	
 
 }

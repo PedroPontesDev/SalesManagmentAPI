@@ -15,7 +15,11 @@ public interface SellerManagment {
 
 	SellerDTO updateSeller(SellerDTO seller) throws Exception;
 
+	SellerDTO updateSellerSalary(Long id, Double newSalary) throws Exception;
+	
 	void deleteSeller(Long id) throws Exception;	
 
-	double calculateComission(SellerDTO seller, double comissionValue) throws Exception;
+	double calculateComission(Long id, Double comissionValue) throws Exception;
+	
+	
 }
