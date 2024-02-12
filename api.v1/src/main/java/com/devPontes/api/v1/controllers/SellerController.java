@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devPontes.api.v1.model.dtos.SellerDTO;
@@ -57,11 +58,11 @@ public class SellerController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PutMapping(path = "{id}/update-seller-salary")
-	public ResponseEntity<SellerDTO> updateSalary(@PathVariable Long id, @RequestBody Double newSalary) throws Exception {
-		SellerDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
-		return new ResponseEntity<>(updatedSeller, HttpStatus.OK);
+	@Operation(tags = {"Seller"}, summary = "Update salary of one seller")
+	@PutMapping(path = "/update-seller-salary")
+	public ResponseEntity<SellerDTO> updateSalary(@RequestParam Long id, @RequestParam Double newSalary) throws Exception {
+	    SellerDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
+	    return ResponseEntity.ok().body(updatedSeller);
 	}
-	
 
 }

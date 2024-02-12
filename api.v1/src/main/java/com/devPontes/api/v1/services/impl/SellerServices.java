@@ -89,9 +89,11 @@ public class SellerServices implements SellerManagment {
 		}
 	}
 	
-	public void insertQuantitySalesInSeller(SellerDTO seller, Integer quantitySale) throws Exception {
-		if(seller != null && seller.getQuantitySalesInMonth() <= 50) {
-			seller.setQuantitySalesInMonth(quantitySale);
+	public void insertQuantitySalesInSeller(SellerDTO sellerDTO, Integer quantitySale) throws Exception {
+		Seller seller = MyMapper.parseObject(sellerDTO, Seller.class);
+		if(seller != null && seller.getQuantitySales() <= 50) {
+			seller.setQuantitySales(quantitySale);
+			sellerRepositories.save(seller);
 		} else {
 			throw new Exception("Não foi possivel alterar numero de vendas no mês, verifique se o vendedor já excedeu a cota de vendas");
 		}
