@@ -1,7 +1,6 @@
 package com.devPontes.api.v1.model.entities;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -28,7 +28,7 @@ public class Sale implements Serializable {
 	private Long id;
 
 	@Column(name = "moment_of_sale")
-	private Instant moment;
+	private LocalDateTime moment;
 
 	@ManyToOne
 	private Seller sellerWhoSale;
@@ -41,7 +41,7 @@ public class Sale implements Serializable {
 
 	private Double value;
 
-	public Sale(Long id, Instant moment, Client client, List<Product> items, Seller seller, Double value) {
+	public Sale(Long id, LocalDateTime moment, Client client, List<Product> items, Seller seller, Double value) {
 		this.id = id;
 		this.moment = moment.now();
 		this.clientWhoBuy = client;
@@ -58,11 +58,11 @@ public class Sale implements Serializable {
 		this.id = id;
 	}
 
-	public Instant getMoment() {
-		return moment.now();
+	public LocalDateTime getMoment() {
+		return moment;
 	}
 
-	public void setMoment(Instant moment) {
+	public void setMoment(LocalDateTime moment) {
 		this.moment = moment;
 	}
 
@@ -120,6 +120,5 @@ public class Sale implements Serializable {
 		return "Sale [id=" + id + ", moment=" + moment + ", sellerWhoSale=" + sellerWhoSale + ", clientWhoBuy="
 				+ clientWhoBuy + ", items=" + items + ", value=" + value + "]";
 	}
-
 
 }

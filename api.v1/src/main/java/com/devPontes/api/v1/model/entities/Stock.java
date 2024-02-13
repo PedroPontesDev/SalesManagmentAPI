@@ -20,19 +20,29 @@ public class Stock {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "capacity")
-	private Integer capacity;
+	@Column(name = "stock_name")
+	private String stockName;
+
+	@Column(name = "current_capacity")
+	private Integer currentCapacity;
+
+	@Column(name = "capacity_max")
+	private Integer capacityMax;
+
 	@Column(name = "total_price_in_stock")
 	private Double totalPriceInStock;
 
 	@OneToMany(mappedBy = "stock")
 	private List<Product> productsInStock = new ArrayList<>();
 
-	public Stock(Long id, Integer capacity, Double totalPriceInStock, List<Product> products) {
+	public Stock(Long id, String name, Integer capacityMax, Integer currentCapacity, Double totalPriceInStock,
+			List<Product> products) {
 		this.id = id;
-		this.capacity = capacity;
+		this.capacityMax = capacityMax;
 		this.totalPriceInStock = totalPriceInStock;
 		this.productsInStock = products;
+		this.stockName = name;
+		this.currentCapacity = currentCapacity;
 	}
 
 	public Stock() {
@@ -47,12 +57,24 @@ public class Stock {
 		this.id = id;
 	}
 
-	public Integer getCapacity() {
-		return capacity;
+	public String getStockName() {
+		return stockName;
 	}
 
-	public void setCapacity(Integer capacity) {
-		this.capacity = capacity;
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
+	}
+
+	public Integer getCapacityMax() {
+		return capacityMax;
+	}
+
+	public void setCapacityMax(Integer capacityMax) {
+		this.capacityMax = capacityMax;
+	}
+
+	public void setCurrentCapacity(Integer currentCapacity) {
+		this.currentCapacity = currentCapacity;
 	}
 
 	public Double getTotalPriceInStock() {
@@ -70,6 +92,19 @@ public class Stock {
 	public void setProductsInStock(List<Product> productsInStock) {
 		this.productsInStock = productsInStock;
 	}
+
+	public boolean isStockFull() {
+	    int currentCapacity = 0;
+	    for (Product product : productsInStock) {
+	        currentCapacity += product.getQuantity();
+	    }
+	    if(currentCapacity >= capacityMax) {
+	    	return true;
+	    } else {
+	    	return false;
+	    }
+	}
+
 
 	@Override
 	public int hashCode() {
@@ -90,9 +125,12 @@ public class Stock {
 
 	@Override
 	public String toString() {
-		return "Stock [id=" + id + ", capacity=" + capacity + ", totalPriceInStock=" + totalPriceInStock
-				+ ", productsInStock=" + productsInStock + "]";
+		return "Stock [id=" + id + ", stockName=" + stockName + ", currentCapacity=" + currentCapacity
+				+ ", capacityMax=" + capacityMax + ", totalPriceInStock=" + totalPriceInStock + ", productsInStock="
+				+ productsInStock + "]";
 	}
-
 	
+	
+
 }
+
