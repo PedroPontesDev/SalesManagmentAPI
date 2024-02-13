@@ -6,13 +6,10 @@ spring:
     password: 35828889
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update 
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
-spring-doc:
-  pathsToMatch: /api/**/v1/**
 
-swagger-ui:
-  use-root-path: true
+spring.flyway.enabled: false
