@@ -26,39 +26,40 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class StockController {
 
 	@Autowired
-	private StockServices StockServices;
+	private StockServices stockServices;
 
 	@Operation(tags = {"Stock"}, description = "Retrieve One Stock")
 	@GetMapping(path = "{/show-stock/{stockId}")
-	public ResponseEntity<StockDTO> showStock(@RequestParam Long stockId) throws Exception {
-		StockDTO stock = StockServices.findStockById(stockId);
+	public ResponseEntity<StockDTO> showStock(@PathVariable Long stockId) throws Exception {
+		StockDTO stock = stockServices.findStockById(stockId);
 		return new ResponseEntity<>(stock, HttpStatus.OK);
 	}
 
 	@Operation(tags = {"Stock"}, summary = "Register one Stock")
 	@PostMapping(path = "/create-stock", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StockDTO> registerNewStock(@RequestBody StockDTO newStock) throws Exception {
-		var Stock = StockServices.createStock(newStock);
-		return new ResponseEntity<>(Stock, HttpStatus.CREATED);
+		var stock = stockServices.createStock(newStock);
+		return new ResponseEntity<>(stock, HttpStatus.CREATED);
 	}
 	
 	@Operation(tags = {"Stock"}, summary = "Update a existent Stock")
-	@PutMapping(path = "/update-stock", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(path = "/update-stock/{stockId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StockDTO> updateExistentStock(@RequestParam Long stockId, @RequestBody StockDTO updatedStock) throws Exception {
-		StockDTO updated = StockServices.updateStock(stockId, updatedStock);
+		StockDTO updated = stockServices.updateStock(stockId, updatedStock);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
 	@Operation(tags = {"Stock"}, summary = "Delete one Stock")
 	@DeleteMapping(path = "/delete-stock/{StockId}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteStock(@PathVariable Long StockId) throws Exception {
-		StockServices.deleteStock(StockId);
+		stockServices.deleteStock(StockId);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@Operation(tags = {"Stock"}, summary = "Upgrade the capacity of stock if stocks get full")
-	@PutMapping(name = "")
-	public ResponseEntity<String> upgradeCapacityOfStock(@PathVariable Long stockId, @RequestParam Integer newCapacity) {
-		
+	@PutMapping(name = "/upgrade-capacity/{stockId}/{newCapacity}")
+	public ResponseEntity<String> upgradeCapacityOfStock(@PathVariable Long stockId, @PathVariable Integer newCapacity) throws Exception {
+		stockServices.upgradeCapacityOfStock(stockId, newCapacity);
+		return ResponseEntity.ok("Capaciada maxima do estoque atualizada com sucesso!");
 	}
 }
