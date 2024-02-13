@@ -1,6 +1,7 @@
 package com.devPontes.api.v1.model.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -8,10 +9,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_users")
+@Table(name = "tb_sellers")
 public class Seller implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -36,6 +38,9 @@ public class Seller implements Serializable {
 
 	@Column(name = "sale_quantity_in_month")
 	private Integer quantitySales;
+
+	@OneToMany(mappedBy = "sellerWhoSale")
+	private List<Sale> salesOfSeller;
 
 	public Seller(Long id, String username, String password, String email, String fullName, double salary,
 			Integer quantitySales) {
@@ -82,6 +87,10 @@ public class Seller implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public List<Sale> getSalesOfSeller() {
+		return salesOfSeller;
 	}
 
 	public String getFullName() {

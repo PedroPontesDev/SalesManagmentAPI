@@ -3,6 +3,8 @@ package com.devPontes.api.v1.model.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,10 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 
 @Entity
-@Table(name = "products")
+@Table(name = "tb_products")
 public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -30,6 +31,10 @@ public class Product implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "stock_id")
 	private Stock stock;
+	
+	@JsonIgnore
+	@ManyToOne
+	private Sale sale;
 
 	public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock) {
 		this.id = id;

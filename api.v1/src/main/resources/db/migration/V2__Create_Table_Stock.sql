@@ -1,5 +1,0 @@
-CREATE TABLE stocks (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    totalPriceInStock DOUBLE NOT NULL
-);
-
