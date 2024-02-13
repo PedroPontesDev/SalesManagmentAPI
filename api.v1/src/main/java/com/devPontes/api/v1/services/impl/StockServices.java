@@ -145,21 +145,57 @@ public class StockServices implements StockManagment {
 		if(entity.isPresent()) {
 			productsRepositories.delete(entity.get());
 		} else {
-			throw new Exception("Não foi possivel encontrar o produto pelo ID" + id);
+			throw new Exception("Não foi possivel encontrar o produto pelo ID" + productId);
 		}
 
 	}
 
 	@Override
-	public void throwQuantityItemUp(Long itemId) {
-		// TODO Auto-generated method stub
+	public void setQuantityItemUp(Long itemId, Long stockId, Integer quantity) throws Exception {
+		var entity = productsRepositories.findById(itemId);
+		var stk = stockRepositories.findById(stockId);
+		if(entity.isPresent() && stk.isPresent()) {
+			Stock stock = stk.get();
+			Product item = entity.get();
+			Integer	apply = stock.getProductsInStock()
+						.stream()
+						.filter(p -> p.getId().equals(itemId))
+						.mapToInt(Product::getQuantity)
+						.sum() + quantity;
+			stock.getProductsInStock()
+             .stream()
+             .filter(p -> p.getId().equals(itemId))
+             .findFirst()
+             .ifPresent(p -> p.setQuantity(apply));
+			 stockRepositories.save(stock);
 		
+		} else {
+			throw new Exception("Não foi possivel atualizar");
+		}
 	}
 
 	@Override
-	public void throwQuantityItemDown(Long itemId) {
-		// TODO Auto-generated method stub
-		
+	public void setQuantityItemDown(Long itemId, Long stockId, Integer quantity) throws Exception {
+		var entity = productsRepositories.findById(itemId);
+		var stk = stockRepositories.findById(stockId);
+		if(entity.isPresent() && stk.isPresent()) {
+			Stock stock = stk.get();
+			Product item = entity.get();
+			Integer	apply = stock.getProductsInStock()
+						.stream()
+						.filter(p -> p.getId().equals(itemId))
+						.mapToInt(Product::getQuantity)
+						.sum() - quantity;
+			stock.getProductsInStock()
+             .stream()
+             .filter(p -> p.getId().equals(itemId))
+             .findFirst()
+             .ifPresent(p -> p.setQuantity(apply));
+			 stockRepositories.save(stock);
+		}else {
+			throw new Exception("Não foi possivel atualizar");
+		}
 	}
 
+	
 }
