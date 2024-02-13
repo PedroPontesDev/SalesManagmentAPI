@@ -30,8 +30,6 @@ public class StockServices implements StockManagment {
 		var entity = MyMapper.parseObject(stock, Stock.class);
 		if (entity == null) {
 			throw new Exception("O estoque criado parece estar nulo, tente novamente!");
-		} else if (entity.getCapacity() > 200) {
-			throw new Exception("O estoque só armazena 200 itens, tente novamente!");
 		} else {
 			stockRepositories.save(entity);
 			return MyMapper.parseObject(entity, StockDTO.class);
@@ -42,7 +40,7 @@ public class StockServices implements StockManagment {
 	@Override
 	public StockDTO updateStock(Long id, StockDTO updated) throws Exception {
 		var entity = stockRepositories.findById(id);
-		if(entity.isPresent()) {
+		if (entity.isPresent()) {
 			Stock stock = entity.get();
 			stock.setCapacityMax(updated.getCapacityMax());
 			stock.setStockName(updated.getStockName());
@@ -56,34 +54,64 @@ public class StockServices implements StockManagment {
 
 	@Override
 	public void deleteStock(Long id) throws Exception {
-		// TODO Auto-generated method stub
-		
+		var entity = stockRepositories.findById(id);
+		if (entity.isPresent()) {
+			stockRepositories.delete(entity.get());
+		} else {
+			throw new Exception("Não foi possivel deletar o estoque, verifique o id e tente novamente!");
+		}
 	}
 
 	@Override
-	public void upgradeCapacityOfStock(Long id, Integer newCapacity) {
-		// TODO Auto-generated method stub
-		
+	public void upgradeCapacityOfStock(Long id, Integer newCapacity) throws Exception {
+		var entity = stockRepositories.findById(id);
+		if (entity.isPresent()) {
+			Stock stock = entity.get();
+			if (stock.isStockFull()) {
+				stock.setCapacityMax(newCapacity);
+				stockRepositories.save(stock);
+			} else {
+				throw new Exception("O upgrade da capacidade só é permitido quando o estoque está cheio");
+			}
+		} else {
+			throw new NullPointerException("Estoque não encontrado para o ID fornecido: " + id);
+		}
 	}
 
 	@Override
-	public double calculateStockPrice(Long id) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	public Boolean verifyIfStockIsFull(Long id) throws Exception {
+		var entity = stockRepositories.findById(id);
+		if (entity.isPresent()) {
+			Stock stock = entity.get();
+			if (stock.isStockFull()) {
+				throw new Exception("O estoque está cheio, exclua alguns itens");
+			} else {
+				return false;
+			}
+		} else {
+			throw new Exception("Estoque não encontrado para o ID fornecido: " + id);
+		}
 	}
 
 	@Override
-	public StockDTO verifyCapacityInStock(StockDTO stock) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public StockDTO calculateStockPrice(Long id) throws Exception {
+		var entity = stockRepositories.findById(id);
+		if(entity.isPresent()) {
+			
+		}
 	}
 
 	@Override
-	public void addProductsInStock(ProductDTO newProduct) throws Exception {
+	public ProductDTO addProductsInStock(ProductDTO newProduct) throws Exception {
+		return newProduct;
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+	@Override
+	public void deleteProductsInStock(Long productId, Integer removeQuantity) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
 
 }

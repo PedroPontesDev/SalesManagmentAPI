@@ -11,13 +11,16 @@ public interface StockManagment {
 
 	StockDTO updateStock(Long id, StockDTO stock) throws Exception;
 
-	StockDTO verifyCapacityInStock(StockDTO stock) throws Exception;
-	
 	void deleteStock(Long id) throws Exception;
 
-	void upgradeCapacityOfStock(Long id, Integer newCapacity);
-	
-	void addProductsInStock(ProductDTO newProduct) throws Exception;
+	void upgradeCapacityOfStock(Long id, Integer newCapacity) throws Exception;
 
-	double calculateStockPrice(Long id) throws Exception;
+	ProductDTO addProductsInStock(ProductDTO newProduct) throws Exception;
+
+	void deleteProductsInStock(Long productId, Integer removeQuantity) throws Exception;
+
+	StockDTO calculateStockPrice(Long id) throws Exception;
+
+	Boolean verifyIfStockIsFull(Long id) throws Exception;
+
 }

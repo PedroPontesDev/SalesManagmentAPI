@@ -73,6 +73,10 @@ public class Stock {
 		this.capacityMax = capacityMax;
 	}
 
+	public Integer getCurrentCapacity() {
+		return currentCapacity;
+	}
+
 	public void setCurrentCapacity(Integer currentCapacity) {
 		this.currentCapacity = currentCapacity;
 	}
@@ -89,22 +93,17 @@ public class Stock {
 		return productsInStock;
 	}
 
-	public void setProductsInStock(List<Product> productsInStock) {
-		this.productsInStock = productsInStock;
-	}
-
 	public boolean isStockFull() {
-	    int currentCapacity = 0;
-	    for (Product product : productsInStock) {
-	        currentCapacity += product.getQuantity();
-	    }
-	    if(currentCapacity >= capacityMax) {
-	    	return true;
-	    } else {
-	    	return false;
-	    }
+		int currentCapacity = 0;
+		for (Product product : productsInStock) {
+			currentCapacity += product.getQuantity();
+		}
+		if (currentCapacity >= capacityMax) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -129,8 +128,5 @@ public class Stock {
 				+ ", capacityMax=" + capacityMax + ", totalPriceInStock=" + totalPriceInStock + ", productsInStock="
 				+ productsInStock + "]";
 	}
-	
-	
 
 }
-
