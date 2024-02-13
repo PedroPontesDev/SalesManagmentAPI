@@ -1,11 +1,17 @@
 package com.devPontes.api.v1.services.impl;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.StockDTO;
+import com.devPontes.api.v1.model.entities.Product;
 import com.devPontes.api.v1.model.entities.Stock;
 import com.devPontes.api.v1.model.mapper.MyMapper;
+import com.devPontes.api.v1.repositories.ProductRepositories;
 import com.devPontes.api.v1.repositories.StockRepositories;
 import com.devPontes.api.v1.services.StockManagment;
 
@@ -13,6 +19,9 @@ public class StockServices implements StockManagment {
 
 	@Autowired
 	private StockRepositories stockRepositories;
+	
+	@Autowired
+	private ProductRepositories productsRepositories;
 
 	@Override
 	public StockDTO findStockById(Long id) throws Exception {
@@ -96,22 +105,61 @@ public class StockServices implements StockManagment {
 	@Override
 	public StockDTO calculateStockPrice(Long id) throws Exception {
 		var entity = stockRepositories.findById(id);
+		if (entity.isPresent()) {
+			Stock stock = entity.get();
+			Double products = stock.getProductsInStock()
+					.stream()
+					.mapToDouble(p -> p.getPrice() * p.getQuantity()).sum();
+			stock.setTotalPriceInStock(products);
+			stockRepositories.save(stock);
+			return MyMapper.parseObject(stock, StockDTO.class);
+		} else {
+			throw new Exception("Não foi possivel identificar o ID" + id);
+		}
+
+	}
+
+	@Override
+	public ProductDTO addProductsInStock(Long stockId, ProductDTO newProduct) throws Exception {
+		var entity = stockRepositories.findById(stockId);
 		if(entity.isPresent()) {
+			Stock stock = entity.get();
+			if(stock.isStockFull()) {
+				throw new Exception("Não é possivel adicionar produtos em um estoque cheio!");
+			} else {
+				Product newProd = MyMapper.parseObject(newProduct, Product.class);
+				stock.getProductsInStock().add(newProd);
+				stockRepositories.save(stock);
+				productsRepositories.save(newProd);
+				return MyMapper.parseObject(newProd, ProductDTO.class);
+			}
 			
 		}
-	}
-
-	@Override
-	public ProductDTO addProductsInStock(ProductDTO newProduct) throws Exception {
 		return newProduct;
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void deleteProductsInStock(Long productId, Integer removeQuantity) throws Exception {
-		// TODO Auto-generated method stub
+	public void deleteProductsInStock(Long productId) throws Exception {
+		var entity = productsRepositories.findById(productId);
+		if(entity.isPresent()) {
+			productsRepositories.delete(entity.get());
+		} else {
+			throw new Exception("Não foi possivel encontrar o produto pelo ID" + id);
+		}
 
+	}
+
+	@Override
+	public void throwQuantityItemUp(Long itemId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void throwQuantityItemDown(Long itemId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -9,4 +9,5 @@ import com.devPontes.api.v1.model.entities.Stock;
 @Repository
 public interface StockRepositories extends JpaRepository<Stock, Long> {
 
+	
 }
