@@ -94,10 +94,6 @@ public class Stock {
 	}
 
 	public boolean isStockFull() {
-		int currentCapacity = 0;
-		for (Product product : productsInStock) {
-			currentCapacity += product.getQuantity();
-		}
 		if (currentCapacity >= capacityMax) {
 			return true;
 		} else {

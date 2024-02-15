@@ -64,5 +64,12 @@ public class SellerController {
 	    SellerDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
 	    return ResponseEntity.ok().body(updatedSeller);
 	}
+	
+	//Metodoa implementar 
+	
+	//1 -> Verificar vendedores que mais venderam no mês 
+	
+	//2 -> Calcular comissão baseada em vendas
+	
 
 }

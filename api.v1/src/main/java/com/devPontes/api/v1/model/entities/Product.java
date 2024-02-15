@@ -82,8 +82,14 @@ public class Product implements Serializable {
 	}
 
 	public boolean isHasInStock() {
-		return hasInStock;
+	    for( Product products : stock.getProductsInStock()) {
+	        if(products.getQuantity() > 0) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
+
 
 	public void setHasInStock(boolean hasInStock) {
 		this.hasInStock = hasInStock;

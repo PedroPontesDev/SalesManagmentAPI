@@ -8,22 +8,35 @@ import java.util.Objects;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.devPontes.api.v1.model.entities.Product;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder
 public class StockDTO extends RepresentationModel<StockDTO> implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
-	private String stockName;
-	private Integer currentCapacity;
-	private Integer capacityMax;
-	private Double totalPriceInStock;
-	private List<Product> productsInStock = new ArrayList<>();
+    @JsonProperty("id")
+    private Long id;
+
+    @JsonProperty("nomeDoEstoque")
+    private String stockName;
+
+    @JsonProperty("capacidadeAtual")
+    private Integer currentCapacity;
+
+    @JsonProperty("capacidadeMaxima")
+    private Integer capacityMax;
+
+    @JsonProperty("precoTotalNoEstoque")
+    private Double totalPriceInStock;
+
+    @JsonProperty("produtosNoEstoque")
+    private List<Product> productsInStock = new ArrayList<>();
 	
-	public StockDTO(Long id, String stockName, Integer currentCapacity, Integer capacityMax, Double totalPriceInStock,
+	public StockDTO(Long id, String stockName, Integer capacityMax, Double totalPriceInStock,
 			List<Product> productsInStock) {
 		this.id = id;
 		this.stockName = stockName;
-		this.currentCapacity = currentCapacity;
 		this.capacityMax = capacityMax;
 		this.totalPriceInStock = totalPriceInStock;
 		this.productsInStock = productsInStock;

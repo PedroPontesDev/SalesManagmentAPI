@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.StockDTO;
 import com.devPontes.api.v1.services.impl.StockServices;
 
@@ -29,10 +29,10 @@ public class StockController {
 	private StockServices stockServices;
 
 	@Operation(tags = {"Stock"}, description = "Retrieve One Stock")
-	@GetMapping(path = "{/show-stock/{stockId}")
+	@GetMapping(path = "/show-stock/{stockId}")
 	public ResponseEntity<StockDTO> showStock(@PathVariable Long stockId) throws Exception {
-		StockDTO stock = stockServices.findStockById(stockId);
-		return new ResponseEntity<>(stock, HttpStatus.OK);
+	    StockDTO stock = stockServices.findStockById(stockId);
+	    return new ResponseEntity<>(stock, HttpStatus.OK);
 	}
 
 	@Operation(tags = {"Stock"}, summary = "Register one Stock")
@@ -44,7 +44,7 @@ public class StockController {
 	
 	@Operation(tags = {"Stock"}, summary = "Update a existent Stock")
 	@PutMapping(path = "/update-stock/{stockId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<StockDTO> updateExistentStock(@RequestParam Long stockId, @RequestBody StockDTO updatedStock) throws Exception {
+	public ResponseEntity<StockDTO> updateExistentStock(@PathVariable Long stockId, @RequestBody StockDTO updatedStock) throws Exception {
 		StockDTO updated = stockServices.updateStock(stockId, updatedStock);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
@@ -57,9 +57,24 @@ public class StockController {
 	}
 	
 	@Operation(tags = {"Stock"}, summary = "Upgrade the capacity of stock if stocks get full")
-	@PutMapping(name = "/upgrade-capacity/{stockId}/{newCapacity}")
+	@PutMapping(path = "/upgrade-capacity/{stockId}/{newCapacity}")
 	public ResponseEntity<String> upgradeCapacityOfStock(@PathVariable Long stockId, @PathVariable Integer newCapacity) throws Exception {
 		stockServices.upgradeCapacityOfStock(stockId, newCapacity);
-		return ResponseEntity.ok("Capaciada maxima do estoque atualizada com sucesso!");
+		return ResponseEntity.ok("Capaciada maxima do estoque atualizada!");
+	}
+	
+	@Operation(tags = {"Stock"}, summary = "Verify if stock is full, if the current capacity is equal max capicity so return true")
+	@GetMapping(path = "/verify-stock/{stockId}")
+	public ResponseEntity<Boolean> verifyIfStockIsFull(@PathVariable Long stockId) throws Exception {
+		Boolean response = stockServices.verifyIfStockIsFull(stockId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	@Operation(tags = {"Stock"}, summary = "Add a new product to referent StockID")
+	@PostMapping(path = "/add-product/{stockId)/{quantity}")
+	public ResponseEntity<ProductDTO> addProductInStock(@RequestBody ProductDTO product, @PathVariable Long stockId, @PathVariable Integer quantity) throws Exception {
+		ProductDTO newProduct = stockServices.addProductsInStock(stockId, product, quantity);
+		return new ResponseEntity<>(newProduct, HttpStatus.OK);
 	}
 }
+	
+	

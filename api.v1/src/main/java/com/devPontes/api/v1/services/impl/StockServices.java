@@ -1,10 +1,7 @@
 package com.devPontes.api.v1.services.impl;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.StockDTO;
@@ -15,6 +12,7 @@ import com.devPontes.api.v1.repositories.ProductRepositories;
 import com.devPontes.api.v1.repositories.StockRepositories;
 import com.devPontes.api.v1.services.StockManagment;
 
+@Service
 public class StockServices implements StockManagment {
 
 	@Autowired
@@ -51,11 +49,13 @@ public class StockServices implements StockManagment {
 		var entity = stockRepositories.findById(id);
 		if (entity.isPresent()) {
 			Stock stock = entity.get();
+			stock.setCurrentCapacity(updated.getCurrentCapacity());
 			stock.setCapacityMax(updated.getCapacityMax());
 			stock.setStockName(updated.getStockName());
 			stock.setTotalPriceInStock(updated.getTotalPriceInStock());
 			stockRepositories.save(stock);
-			return MyMapper.parseObject(entity, StockDTO.class);
+			var dto = MyMapper.parseObject(stock, StockDTO.class);
+			return dto;
 		} else {
 			throw new Exception("Estoque não pode ser atualizado, verifique os dados e tente novamente!");
 		}
@@ -120,7 +120,7 @@ public class StockServices implements StockManagment {
 	}
 
 	@Override
-	public ProductDTO addProductsInStock(Long stockId, ProductDTO newProduct) throws Exception {
+	public ProductDTO addProductsInStock(Long stockId, ProductDTO newProduct, Integer quantity) throws Exception {
 		var entity = stockRepositories.findById(stockId);
 		if(entity.isPresent()) {
 			Stock stock = entity.get();
@@ -128,7 +128,9 @@ public class StockServices implements StockManagment {
 				throw new Exception("Não é possivel adicionar produtos em um estoque cheio!");
 			} else {
 				Product newProd = MyMapper.parseObject(newProduct, Product.class);
+				newProd.setQuantity(quantity);
 				stock.getProductsInStock().add(newProd);
+				Integer in = stock.getCurrentCapacity() + 1;
 				stockRepositories.save(stock);
 				productsRepositories.save(newProd);
 				return MyMapper.parseObject(newProd, ProductDTO.class);
@@ -140,9 +142,11 @@ public class StockServices implements StockManagment {
 	}
 
 	@Override
-	public void deleteProductsInStock(Long productId) throws Exception {
+	public void deleteProductsInStock(Long productId, Long stockId) throws Exception {
 		var entity = productsRepositories.findById(productId);
+		var stock = stockRepositories.findById(stockId);
 		if(entity.isPresent()) {
+			Integer out = stock.get().getCurrentCapacity() - 1;
 			productsRepositories.delete(entity.get());
 		} else {
 			throw new Exception("Não foi possivel encontrar o produto pelo ID" + productId);
