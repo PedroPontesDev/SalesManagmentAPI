@@ -3,6 +3,9 @@ package com.devPontes.api.v1.model.entities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,113 +19,117 @@ import jakarta.persistence.Table;
 @Table(name = "tb_stock")
 public class Stock {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "stock_name")
-	private String stockName;
+    @Column(name = "stock_name")
+    private String stockName;
 
-	@Column(name = "current_capacity")
-	private Integer currentCapacity;
+    @Column(name = "current_capacity")
+    private Integer currentCapacity;
 
-	@Column(name = "capacity_max")
-	private Integer capacityMax;
+    @Column(name = "capacity_max")
+    private Integer capacityMax;
 
-	@Column(name = "total_price_in_stock")
-	private Double totalPriceInStock;
+    @Column(name = "total_price_in_stock")
+    private Double totalPriceInStock;
 
-	@OneToMany(mappedBy = "stock")
-	private List<Product> productsInStock = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "stock")
+    private List<Product> productsInStock;
 
-	public Stock(Long id, String name, Integer capacityMax, Integer currentCapacity, Double totalPriceInStock,
-			List<Product> products) {
-		this.id = id;
-		this.capacityMax = capacityMax;
-		this.totalPriceInStock = totalPriceInStock;
-		this.productsInStock = products;
-		this.stockName = name;
-		this.currentCapacity = currentCapacity;
-	}
+    public Stock(Long id, String name, Integer capacityMax, Integer currentCapacity, Double totalPriceInStock,
+            List<Product> products) {
+        this.id = id;
+        this.capacityMax = capacityMax;
+        this.totalPriceInStock = totalPriceInStock;
+        this.productsInStock = products;
+        this.stockName = name;
+        this.currentCapacity = currentCapacity;
+        this.productsInStock = new ArrayList<>();
 
-	public Stock() {
+    }
 
-	}
+    public Stock() {
 
-	public Long getId() {
-		return id;
-	}
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getStockName() {
-		return stockName;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setStockName(String stockName) {
-		this.stockName = stockName;
-	}
+    public String getStockName() {
+        return stockName;
+    }
 
-	public Integer getCapacityMax() {
-		return capacityMax;
-	}
+    public void setStockName(String stockName) {
+        this.stockName = stockName;
+    }
 
-	public void setCapacityMax(Integer capacityMax) {
-		this.capacityMax = capacityMax;
-	}
+    public Integer getCapacityMax() {
+        return capacityMax;
+    }
 
-	public Integer getCurrentCapacity() {
-		return currentCapacity;
-	}
+    public void setCapacityMax(Integer capacityMax) {
+        this.capacityMax = capacityMax;
+    }
 
-	public void setCurrentCapacity(Integer currentCapacity) {
-		this.currentCapacity = currentCapacity;
-	}
+    public Integer getCurrentCapacity() {
+        return currentCapacity = this.getProductsInStock()
+        								.stream()
+        								.mapToInt(p -> p.getQuantity())
+        								.sum();
+        
+    }
+        								
 
-	public Double getTotalPriceInStock() {
-		return totalPriceInStock;
-	}
+    public void setCurrentCapacity(Integer currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
 
-	public void setTotalPriceInStock(Double totalPriceInStock) {
-		this.totalPriceInStock = totalPriceInStock;
-	}
+    public Double getTotalPriceInStock() {
+        return totalPriceInStock;
+    }
 
-	public List<Product> getProductsInStock() {
-		return productsInStock;
-	}
+    public void setTotalPriceInStock(Double totalPriceInStock) {
+        this.totalPriceInStock = totalPriceInStock;
+    }
 
-	public boolean isStockFull() {
-		if (currentCapacity >= capacityMax) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public List<Product> getProductsInStock() {
+        return productsInStock;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+    public boolean isStockFull() {
+        return this.currentCapacity >= this.capacityMax;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Stock other = (Stock) obj;
-		return Objects.equals(id, other.id);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
-	@Override
-	public String toString() {
-		return "Stock [id=" + id + ", stockName=" + stockName + ", currentCapacity=" + currentCapacity
-				+ ", capacityMax=" + capacityMax + ", totalPriceInStock=" + totalPriceInStock + ", productsInStock="
-				+ productsInStock + "]";
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Stock other = (Stock) obj;
+        return Objects.equals(id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        return "Stock [id=" + id + ", stockName=" + stockName + ", currentCapacity=" + currentCapacity
+                + ", capacityMax=" + capacityMax + ", totalPriceInStock=" + totalPriceInStock + ", productsInStock="
+                + productsInStock + "]";
+    }
 
 }

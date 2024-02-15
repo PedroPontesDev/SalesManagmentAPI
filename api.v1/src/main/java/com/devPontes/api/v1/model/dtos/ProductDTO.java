@@ -2,6 +2,8 @@ package com.devPontes.api.v1.model.dtos;
 
 import java.util.Objects;
 
+import com.devPontes.api.v1.model.entities.Sale;
+import com.devPontes.api.v1.model.entities.Stock;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -21,12 +23,16 @@ public class ProductDTO {
 	@JsonProperty(value = "temEmEstoque")
 	private boolean hasInStock;
 
-	public ProductDTO(Long id, String name, Double price, Integer quantity, boolean hasInStock) {
+	private StockDTO stock;
+
+	public ProductDTO(Long id, String name, Double price, Integer quantity, boolean hasInStock, StockDTO stock,
+			Sale sale) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.quantity = quantity;
 		this.hasInStock = hasInStock;
+		this.stock = stock;
 	}
 
 	public ProductDTO() {
@@ -39,6 +45,14 @@ public class ProductDTO {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public StockDTO getStock() {
+		return stock;
+	}
+
+	public void setStock(StockDTO stock) {
+		this.stock = stock;
 	}
 
 	public String getName() {

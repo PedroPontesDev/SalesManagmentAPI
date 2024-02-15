@@ -17,7 +17,7 @@ public class StockServices implements StockManagment {
 
 	@Autowired
 	private StockRepositories stockRepositories;
-	
+
 	@Autowired
 	private ProductRepositories productsRepositories;
 
@@ -107,10 +107,9 @@ public class StockServices implements StockManagment {
 		var entity = stockRepositories.findById(id);
 		if (entity.isPresent()) {
 			Stock stock = entity.get();
-			Double products = stock.getProductsInStock()
-					.stream()
-					.mapToDouble(p -> p.getPrice() * p.getQuantity()).sum();
-			stock.setTotalPriceInStock(products);
+			Double productsPrice = stock.getProductsInStock().stream().mapToDouble(p -> p.getPrice() * p.getQuantity())
+					.sum();
+			stock.setTotalPriceInStock(productsPrice);
 			stockRepositories.save(stock);
 			return MyMapper.parseObject(stock, StockDTO.class);
 		} else {
@@ -120,32 +119,35 @@ public class StockServices implements StockManagment {
 	}
 
 	@Override
-	public ProductDTO addProductsInStock(Long stockId, ProductDTO newProduct, Integer quantity) throws Exception {
+	public ProductDTO addProductsInStock(Long stockId, ProductDTO newProduct) throws Exception {
 		var entity = stockRepositories.findById(stockId);
-		if(entity.isPresent()) {
+		if (entity.isPresent()) {
 			Stock stock = entity.get();
-			if(stock.isStockFull()) {
+			if (stock.isStockFull()) {
 				throw new Exception("Não é possivel adicionar produtos em um estoque cheio!");
 			} else {
 				Product newProd = MyMapper.parseObject(newProduct, Product.class);
-				newProd.setQuantity(quantity);
-				stock.getProductsInStock().add(newProd);
-				Integer in = stock.getCurrentCapacity() + 1;
-				stockRepositories.save(stock);
+				newProd.setStock(stock);
+				newProd.getStock().getProductsInStock().add(newProd);
+				Integer in = stock.getProductsInStock()
+						.stream()
+						.mapToInt(Product::getQuantity)
+						.sum() + newProd.getQuantity();
+				stock.setCurrentCapacity(in);
 				productsRepositories.save(newProd);
+				stockRepositories.save(stock);
 				return MyMapper.parseObject(newProd, ProductDTO.class);
 			}
-			
+
 		}
 		return newProduct;
-
 	}
 
 	@Override
 	public void deleteProductsInStock(Long productId, Long stockId) throws Exception {
 		var entity = productsRepositories.findById(productId);
 		var stock = stockRepositories.findById(stockId);
-		if(entity.isPresent()) {
+		if (entity.isPresent()) {
 			Integer out = stock.get().getCurrentCapacity() - 1;
 			productsRepositories.delete(entity.get());
 		} else {
@@ -158,21 +160,15 @@ public class StockServices implements StockManagment {
 	public void setQuantityItemUp(Long itemId, Long stockId, Integer quantity) throws Exception {
 		var entity = productsRepositories.findById(itemId);
 		var stk = stockRepositories.findById(stockId);
-		if(entity.isPresent() && stk.isPresent()) {
+		if (entity.isPresent() && stk.isPresent()) {
 			Stock stock = stk.get();
 			Product item = entity.get();
-			Integer	apply = stock.getProductsInStock()
-						.stream()
-						.filter(p -> p.getId().equals(itemId))
-						.mapToInt(Product::getQuantity)
-						.sum() + quantity;
-			stock.getProductsInStock()
-             .stream()
-             .filter(p -> p.getId().equals(itemId))
-             .findFirst()
-             .ifPresent(p -> p.setQuantity(apply));
-			 stockRepositories.save(stock);
-		
+			Integer apply = stock.getProductsInStock().stream().filter(p -> p.getId().equals(itemId))
+					.mapToInt(Product::getQuantity).sum() + quantity;
+			stock.getProductsInStock().stream().filter(p -> p.getId().equals(itemId)).findFirst()
+					.ifPresent(p -> p.setQuantity(apply));
+			stockRepositories.save(stock);
+
 		} else {
 			throw new Exception("Não foi possivel atualizar");
 		}
@@ -182,24 +178,17 @@ public class StockServices implements StockManagment {
 	public void setQuantityItemDown(Long itemId, Long stockId, Integer quantity) throws Exception {
 		var entity = productsRepositories.findById(itemId);
 		var stk = stockRepositories.findById(stockId);
-		if(entity.isPresent() && stk.isPresent()) {
+		if (entity.isPresent() && stk.isPresent()) {
 			Stock stock = stk.get();
 			Product item = entity.get();
-			Integer	apply = stock.getProductsInStock()
-						.stream()
-						.filter(p -> p.getId().equals(itemId))
-						.mapToInt(Product::getQuantity)
-						.sum() - quantity;
-			stock.getProductsInStock()
-             .stream()
-             .filter(p -> p.getId().equals(itemId))
-             .findFirst()
-             .ifPresent(p -> p.setQuantity(apply));
-			 stockRepositories.save(stock);
-		}else {
+			Integer apply = stock.getProductsInStock().stream().filter(p -> p.getId().equals(itemId))
+					.mapToInt(Product::getQuantity).sum() - quantity;
+			stock.getProductsInStock().stream().filter(p -> p.getId().equals(itemId)).findFirst()
+					.ifPresent(p -> p.setQuantity(apply));
+			stockRepositories.save(stock);
+		} else {
 			throw new Exception("Não foi possivel atualizar");
 		}
 	}
 
-	
 }

@@ -57,7 +57,7 @@ public class StockController {
 	}
 	
 	@Operation(tags = {"Stock"}, summary = "Upgrade the capacity of stock if stocks get full")
-	@PutMapping(path = "/upgrade-capacity/{stockId}/{newCapacity}")
+	@PutMapping(path = "/upgrade-capacity/{stockId}")
 	public ResponseEntity<String> upgradeCapacityOfStock(@PathVariable Long stockId, @PathVariable Integer newCapacity) throws Exception {
 		stockServices.upgradeCapacityOfStock(stockId, newCapacity);
 		return ResponseEntity.ok("Capaciada maxima do estoque atualizada!");
@@ -70,11 +70,26 @@ public class StockController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@Operation(tags = {"Stock"}, summary = "Add a new product to referent StockID")
-	@PostMapping(path = "/add-product/{stockId)/{quantity}")
-	public ResponseEntity<ProductDTO> addProductInStock(@RequestBody ProductDTO product, @PathVariable Long stockId, @PathVariable Integer quantity) throws Exception {
-		ProductDTO newProduct = stockServices.addProductsInStock(stockId, product, quantity);
+	@PostMapping(path = "/add-product/{stockId}")
+	public ResponseEntity<ProductDTO> addProductInStock(@RequestBody ProductDTO product, @PathVariable Long stockId) throws Exception {
+		ProductDTO newProduct = stockServices.addProductsInStock(stockId, product);
 		return new ResponseEntity<>(newProduct, HttpStatus.OK);
 	}
+	
+	@Operation(tags = {"Stock"}, summary = "Delete one product to referent StockID")
+	@DeleteMapping(path = "/delete-product/{stockId}/{productId}")
+	public ResponseEntity<ProductDTO> deleteProductInStock(@PathVariable Long stockId, @PathVariable Long productId) throws Exception {
+		stockServices.deleteProductsInStock(stockId, productId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@Operation(tags = {"Stock"}, summary = "Calculate total prince in referent StockID")
+	@PutMapping(path = "/calculate-stock/{stockId}")
+	public ResponseEntity<?> calculateAllPriceOfStock(@PathVariable Long stockId) {
+		var calculated = calculateAllPriceOfStock(stockId);
+		return new ResponseEntity<>(calculated, HttpStatus.OK);
+	}
+	
 }
 	
 	

@@ -16,114 +16,110 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tb_products")
 public class Product implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String name;
-	private double price;
-	private Integer quantity;
-	
-	private boolean hasInStock; // If quantity in stock = 0, so we dont have in stock - Logicals
+    private String name;
+    private double price;
+    private Integer quantity;
 
-	@ManyToOne
-	@JoinColumn(name = "stock_id")
-	private Stock stock;
-	
-	@JsonIgnore
-	@ManyToOne
-	private Sale sale;
+    private boolean hasInStock; // If quantity in stock = 0, so we dont have in stock - Logicals
 
-	public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock) {
-		this.id = id;
-		this.name = name;
-		this.price = price;
-		this.quantity = quantity;
-		this.hasInStock = hasInStock;
-		this.stock = stock;
-	}
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
 
-	public Product() {
+    @JsonIgnore
+    @ManyToOne
+    private Sale sale;
 
-	}
+    public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock, Sale sale) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.hasInStock = hasInStock;
+        this.stock = stock;
+        this.sale = sale;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Product() {
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Integer getQuantity() {
-		return quantity;
-	}
+    public double getPrice() {
+        return price;
+    }
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
-	public boolean isHasInStock() {
-	    for( Product products : stock.getProductsInStock()) {
-	        if(products.getQuantity() > 0) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
+    public Integer getQuantity() {
+        return quantity;
+    }
 
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
-	public void setHasInStock(boolean hasInStock) {
-		this.hasInStock = hasInStock;
-	}
+    public boolean isHasInStock() {
+        return quantity > 0 && stock != null;
+    }
 
-	public Stock getStock() {
-		return stock;
-	}
+    public void setHasInStock(boolean hasInStock) {
+        this.hasInStock = hasInStock;
+    }
 
-	public void setStock(Stock stock) {
-		this.stock = stock;
-	}
+    public Stock getStock() {
+        return stock;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+    public void setStock(Stock stock) {
+        this.stock = stock;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Product other = (Product) obj;
-		return Objects.equals(id, other.id);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
-	@Override
-	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", hasInStock="
-				+ hasInStock + ", stock=" + stock + "]";
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Product other = (Product) obj;
+        return Objects.equals(id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        return "Product [id=" + id + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", hasInStock="
+                + hasInStock + ", stock=" + stock + "]";
+    }
 
 }

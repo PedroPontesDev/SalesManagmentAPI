@@ -1,5 +1,6 @@
 package com.devPontes.api.v1.services;
 
+import java.util.List;
 import java.util.Set;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
@@ -7,13 +8,13 @@ import com.devPontes.api.v1.model.dtos.SellerDTO;
 
 public interface ProductManagment {
 
-	ProductDTO findProductById(Long id);
+	ProductDTO findProductById(Long id) throws Exception;
 
-	Set<ProductDTO> findMostExpansives(Long stockId);
+	List<ProductDTO> findMostExpansives(Long stockId);
 
-	Set<ProductDTO> findLessExpansives(Long stockId);
+	List<ProductDTO> findLessExpansives(Long stockId);
 
-	Set<ProductDTO> findMostSalleds(Long stockId);
+	List<ProductDTO> findMostSalleds(Long stockId);
 
 	ProductDTO registerProduct(ProductDTO newProduct);
 

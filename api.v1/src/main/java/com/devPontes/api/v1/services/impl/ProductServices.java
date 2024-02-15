@@ -1,9 +1,15 @@
 package com.devPontes.api.v1.services.impl;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SellerDTO;
+import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.repositories.ProductRepositories;
+import com.devPontes.api.v1.repositories.StockRepositories;
 import com.devPontes.api.v1.services.ProductManagment;
 
 
@@ -12,26 +18,51 @@ public class ProductServices implements ProductManagment{
 	@Autowired
 	private ProductRepositories productRepositories;
 
+	@Autowired
+	private StockRepositories stockRepositorie;
+
 	@Override
-	public SellerDTO findProductById(Long id) {
+	public ProductDTO findProductById(Long id) throws Exception {
+		var entity = productRepositories.findById(id);
+		if(entity.isPresent()) {
+			return MyMapper.parseObject(entity.get(), ProductDTO.class);
+		} else {
+			throw new Exception("Não foi possivel encontrar o produto de ID" + id);
+		}
+	}
+
+	@Override
+	public List<ProductDTO> findMostExpansives(Long stockId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SellerDTO registerProduct(SellerDTO seller) {
+	public List<ProductDTO> findLessExpansives(Long stockId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SellerDTO updateProduct(SellerDTO seller) {
+	public List<ProductDTO> findMostSalleds(Long stockId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void deleteProduct(Long id) {
+	public ProductDTO registerProduct(ProductDTO newProduct) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ProductDTO updateProduct(ProductDTO product) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteProductById(Long id) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -41,5 +72,7 @@ public class ProductServices implements ProductManagment{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	
 	
 }
