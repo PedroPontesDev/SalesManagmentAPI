@@ -1,12 +1,16 @@
 package com.devPontes.api.v1.services.impl;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SellerDTO;
+import com.devPontes.api.v1.model.entities.Product;
+import com.devPontes.api.v1.model.entities.Stock;
 import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.repositories.ProductRepositories;
 import com.devPontes.api.v1.repositories.StockRepositories;
@@ -19,7 +23,7 @@ public class ProductServices implements ProductManagment{
 	private ProductRepositories productRepositories;
 
 	@Autowired
-	private StockRepositories stockRepositorie;
+	private StockRepositories stockRepositories;
 
 	@Override
 	public ProductDTO findProductById(Long id) throws Exception {
@@ -32,15 +36,25 @@ public class ProductServices implements ProductManagment{
 	}
 
 	@Override
-	public List<ProductDTO> findMostExpansives(Long stockId) {
+	public List<ProductDTO> findMostExpansivesInStock(Long stockId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<ProductDTO> findLessExpansives(Long stockId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception {
+		var stock = stockRepositories.findById(stockId);
+		if(stock.isPresent()) {
+			Stock stok = stock.get(); 
+			List<Product> products = stok.getProductsInStock()
+											.stream()
+											.sorted(Comparator.comparingDouble(Product::getPrice))
+											.collect(Collectors.toList());
+			var dto = MyMapper.parseListObjects(products, ProductDTO.class);
+			return dto;					
+		} else {
+			throw new Exception("");
+		}
 	}
 
 	@Override

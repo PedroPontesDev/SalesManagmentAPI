@@ -10,18 +10,18 @@ public interface ProductManagment {
 
 	ProductDTO findProductById(Long id) throws Exception;
 
-	List<ProductDTO> findMostExpansives(Long stockId);
+	List<ProductDTO> findMostExpansivesInStock(Long stockId)throws Exception;;
 
-	List<ProductDTO> findLessExpansives(Long stockId);
+	List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception;
 
-	List<ProductDTO> findMostSalleds(Long stockId);
+	List<ProductDTO> findMostSalleds(Long stockId) throws Exception;;
 
-	ProductDTO registerProduct(ProductDTO newProduct);
+	ProductDTO registerProduct(ProductDTO newProduct) throws Exception;
 
-	ProductDTO updateProduct(ProductDTO product);
+	ProductDTO updateProduct(ProductDTO product) throws Exception;;
 
-	void deleteProductById(Long id);
+	void deleteProductById(Long id) throws Exception;
 
-	boolean verifyInStock(Long stockId, Long productId);
+	boolean verifyInStock(Long stockId, Long productId) throws Exception;;
 
 }
