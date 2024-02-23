@@ -10,7 +10,9 @@ public interface ProductManagment {
 
 	ProductDTO findProductById(Long id) throws Exception;
 
-	List<ProductDTO> findMostExpansivesInStock(Long stockId)throws Exception;;
+	List<ProductDTO> findAll() throws Exception;
+	
+	List<ProductDTO> findMostExpansivesInStock(Long stockId)throws Exception;
 
 	List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception;
 

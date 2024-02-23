@@ -39,22 +39,22 @@ public class ProductController {
 
 	@Operation(tags = {"Product"}, summary = "Register one Product")
 	@PostMapping(path = "/register-product", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProductDTO> registerNewProduct(@RequestBody ProductDTO newProduct) throws Exception {
-		var Product = productServices.registerProduct(newProduct);
+	public ResponseEntity<ProductDTO> registerNewProduct(@RequestBody ProductDTO newProduct, @PathVariable Long stockId) throws Exception {
+		var Product = productServices.registerProductInStock(newProduct, stockId);
 		return new ResponseEntity<>(Product, HttpStatus.CREATED);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Update a existent Product")
 	@PutMapping(path = "/update-product")
-	public ResponseEntity<ProductDTO> updateExistentProduct(@RequestBody ProductDTO updatedProduct) throws Exception {
-		ProductDTO updated = productServices.updateProduct(updatedProduct);
+	public ResponseEntity<ProductDTO> updateExistentProduct(@RequestBody ProductDTO updatedProduct, @PathVariable Long stockId) throws Exception {
+		ProductDTO updated = productServices.updateProductInStock(updatedProduct, stockId);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Delete one Product")
 	@DeleteMapping(path = "{productId}/delete-product/ ")
-	public ResponseEntity<?> deleteProduct(@PathVariable Long ProductId) throws Exception {
-		productServices.deleteProductById(ProductId);
+	public ResponseEntity<?> deleteProduct(@PathVariable Long ProductId, @PathVariable Long stockId) throws Exception {
+		productServices.deleteProductByIdInStock(ProductId, stockId);
 		return ResponseEntity.noContent().build();
 	}
 
