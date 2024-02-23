@@ -1,6 +1,5 @@
 package com.devPontes.api.v1.services.impl;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +7,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.entities.Product;
@@ -21,6 +20,7 @@ import com.devPontes.api.v1.repositories.SaleRepositories;
 import com.devPontes.api.v1.repositories.StockRepositories;
 import com.devPontes.api.v1.services.ProductManagment;
 
+@Service
 public class ProductServices implements ProductManagment {
 
 	@Autowired
@@ -43,9 +43,9 @@ public class ProductServices implements ProductManagment {
 	}
 
 	@Override
-	public List<ProductDTO> findMostExpansivesInStock(Long stockId) throws Exception {
+	public List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception {
 		var stock = stockRepositories.findById(stockId);
-		if (stock.isPresent() && stock.get().isStockFull()) {
+		if (stock.isPresent()) {
 			Stock entity = stock.get();
 			List<Product> allProducts = entity.getProductsInStock().stream()
 					.sorted(Comparator.comparingDouble(Product::getPrice)).collect(Collectors.toList());
@@ -59,9 +59,9 @@ public class ProductServices implements ProductManagment {
 	}
 
 	@Override
-	public List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception {
+	public List<ProductDTO> findMostExpansivesInStock(Long stockId) throws Exception {
 		var stock = stockRepositories.findById(stockId);
-		if (stock.isPresent() && stock.get().isStockFull()) {
+		if (stock.isPresent()) {
 			Stock stok = stock.get();
 			List<Product> products = stok.getProductsInStock().stream()
 					.sorted(Comparator.comparingDouble(Product::getPrice).reversed()).toList();
@@ -149,8 +149,30 @@ public class ProductServices implements ProductManagment {
 
 	@Override
 	public boolean verifyInStock(Long stockId, Long productId) {
-		// TODO Auto-generated method stub
-		return false;
+	   var optionalStock = stockRepositories.findById(stockId);
+	   var optionalProduct = productRepositories.findById(productId);
+	    if (optionalStock.isPresent() && optionalProduct.isPresent()) {
+	        Stock stock = optionalStock.get();
+	        Product product = optionalProduct.get();
+	        if (product.getStock().getId().equals(stockId)) { // Verifica se o produto pertence ao estoque especificado
+	            return product.isHasInStock(); // Retorna true se o produto estiver em estoque ou false se não estiver
+	        } else {
+	            throw new IllegalArgumentException("O produto não pertence ao estoque especificado");
+	        }
+	    } else {
+	        throw new NoSuchElementException("Produto ou estoque não encontrado");
+	    }
 	}
+
+	@Override
+	public List<ProductDTO> findAll() throws Exception {
+		var prods = productRepositories.findAll();
+		if(prods != null) {
+			return MyMapper.parseListObjects(prods, ProductDTO.class);
+		} else {
+			throw new Exception("Não foi possivel recuperar todos produtos");
+		}
+	}
+
 
 }

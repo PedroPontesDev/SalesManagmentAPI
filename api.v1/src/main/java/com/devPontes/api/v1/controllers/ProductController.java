@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
@@ -30,40 +29,47 @@ public class ProductController {
 	@Autowired
 	private ProductServices productServices;
 
-//	@Operation(tags = {"Product"}, description = "Retrieve all Products")
-//	@GetMapping(path = "/find-all")
-	//public ResponseEntity<List<ProductDTO>> findAll() {
-	//	List<ProductDTO> all = productServices.findAll();
-	//	return new ResponseEntity<>(all, HttpStatus.OK);
-//	}
+	@Operation(tags = {"Product"}, description = "Retrieve all Products")
+	@GetMapping(path = "/find-all")
+	public ResponseEntity<List<ProductDTO>> findAll() throws Exception {
+		List<ProductDTO> all = productServices.findAll();
+		return new ResponseEntity<>(all, HttpStatus.OK);
+	}
+	
+	@Operation(tags = {"Product"}, description = "Retrieve most expansives products in stock")
+	@GetMapping(path = "/find-expansives/{stockId}")
+	public ResponseEntity<List<ProductDTO>> findMostExpansives(@PathVariable Long stockId) throws Exception {
+		var prods = productServices.findMostExpansivesInStock(stockId);
+		return new ResponseEntity<>(prods, HttpStatus.OK);
+	}
+	
+	@Operation(tags = {"Product"}, description = "Retrieve less expansives products in stock")
+	@GetMapping(path = "/find-less/{stockId}")
+	public ResponseEntity<List<ProductDTO>> findLessExpansivesInStock(@PathVariable Long stockId) throws Exception {
+		var prods = productServices.findLessExpansivesInStock(stockId);
+		return new ResponseEntity<>(prods, HttpStatus.OK);
+	}
 
 	@Operation(tags = {"Product"}, summary = "Register one Product")
-	@PostMapping(path = "/register-product", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/register-product/{stockId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProductDTO> registerNewProduct(@RequestBody ProductDTO newProduct, @PathVariable Long stockId) throws Exception {
 		var Product = productServices.registerProductInStock(newProduct, stockId);
 		return new ResponseEntity<>(Product, HttpStatus.CREATED);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Update a existent Product")
-	@PutMapping(path = "/update-product")
+	@PutMapping(path = "/update-product/{stockId}")
 	public ResponseEntity<ProductDTO> updateExistentProduct(@RequestBody ProductDTO updatedProduct, @PathVariable Long stockId) throws Exception {
 		ProductDTO updated = productServices.updateProductInStock(updatedProduct, stockId);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Delete one Product")
-	@DeleteMapping(path = "{productId}/delete-product/ ")
-	public ResponseEntity<?> deleteProduct(@PathVariable Long ProductId, @PathVariable Long stockId) throws Exception {
-		productServices.deleteProductByIdInStock(ProductId, stockId);
+	@DeleteMapping(path = "/delete-product/{stockId}/{productId}")
+	public ResponseEntity<?> deleteProduct(@PathVariable Long productId, @PathVariable Long stockId) throws Exception {
+		productServices.deleteProductByIdInStock(productId, stockId);
 		return ResponseEntity.noContent().build();
 	}
 
-	
-	//Metodoa implementar 
-	
-	//1 -> Verificar vendedores que mais venderam no mês 
-	
-	//2 -> Calcular comissão baseada em vendas
-	
-  //11
+	// A implementar metodos de produtos mais vendidos
 }

@@ -104,18 +104,18 @@ public class StockServices implements StockManagment {
 
 	@Override
 	public StockDTO calculateStockPrice(Long id) throws Exception {
-		var entity = stockRepositories.findById(id);
-		if (entity.isPresent()) {
-			Stock stock = entity.get();
-			Double productsPrice = stock.getProductsInStock().stream().mapToDouble(p -> p.getPrice() * p.getQuantity())
-					.sum();
-			stock.setTotalPriceInStock(productsPrice);
-			stockRepositories.save(stock);
-			return MyMapper.parseObject(stock, StockDTO.class);
-		} else {
-			throw new Exception("Não foi possivel identificar o ID" + id);
-		}
-
+	    var entity = stockRepositories.findById(id);
+	    if (entity.isPresent()) {
+	        Stock stock = entity.get();
+	        Double productsPrice = stock.getProductsInStock().stream()
+	            .mapToDouble(p -> p.getPrice() * p.getQuantity())
+	            .sum();
+	        stock.setTotalPriceInStock(productsPrice);
+	        stockRepositories.save(stock);
+	        return MyMapper.parseObject(stock, StockDTO.class);
+	    } else {
+	        throw new Exception("Não foi possível identificar o ID " + id);
+	    }
 	}
 
 	@Override

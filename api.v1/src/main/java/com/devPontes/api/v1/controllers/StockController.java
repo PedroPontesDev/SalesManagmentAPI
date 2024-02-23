@@ -85,8 +85,8 @@ public class StockController {
 	
 	@Operation(tags = {"Stock"}, summary = "Calculate total prince in referent StockID")
 	@PutMapping(path = "/calculate-stock/{stockId}")
-	public ResponseEntity<?> calculateAllPriceOfStock(@PathVariable Long stockId) {
-		var calculated = calculateAllPriceOfStock(stockId);
+	public ResponseEntity<?> calculateAllPriceOfStock(@PathVariable Long stockId) throws Exception {
+		var calculated = stockServices.calculateStockPrice(stockId);
 		return new ResponseEntity<>(calculated, HttpStatus.OK);
 	}
 	

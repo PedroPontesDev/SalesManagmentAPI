@@ -23,7 +23,7 @@ public class ProductDTO {
 	@JsonProperty(value = "temEmEstoque")
 	private boolean hasInStock;
 
-	private StockDTO stock;
+	private String stockName;
 
 	public ProductDTO(Long id, String name, Double price, Integer quantity, boolean hasInStock, StockDTO stock,
 			Sale sale) {
@@ -32,7 +32,7 @@ public class ProductDTO {
 		this.price = price;
 		this.quantity = quantity;
 		this.hasInStock = hasInStock;
-		this.stock = stock;
+		this.stockName = stock.getStockName();
 	}
 
 	public ProductDTO() {
@@ -47,12 +47,12 @@ public class ProductDTO {
 		this.id = id;
 	}
 
-	public StockDTO getStock() {
-		return stock;
+	public String getStockName() {
+		return stockName;
 	}
 
-	public void setStock(StockDTO stock) {
-		this.stock = stock;
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
 	}
 
 	public String getName() {
