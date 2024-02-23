@@ -30,40 +30,34 @@ public class ProductController {
 	@Autowired
 	private ProductServices productServices;
 
-	@Operation(tags = {"Product"}, description = "Retrieve all Products")
-	@GetMapping(path = "/find-all")
-	public ResponseEntity<List<ProductDTO>> findAll() {
-		List<ProductDTO> all = productServices.findAll();
-		return new ResponseEntity<>(all, HttpStatus.OK);
-	}
+//	@Operation(tags = {"Product"}, description = "Retrieve all Products")
+//	@GetMapping(path = "/find-all")
+	//public ResponseEntity<List<ProductDTO>> findAll() {
+	//	List<ProductDTO> all = productServices.findAll();
+	//	return new ResponseEntity<>(all, HttpStatus.OK);
+//	}
 
 	@Operation(tags = {"Product"}, summary = "Register one Product")
 	@PostMapping(path = "/register-product", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProductDTO> registerNewProduct(@RequestBody ProductDTO newProduct) throws Exception {
-		var Product = ProductServices.registerProduct(newProduct);
+		var Product = productServices.registerProduct(newProduct);
 		return new ResponseEntity<>(Product, HttpStatus.CREATED);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Update a existent Product")
 	@PutMapping(path = "/update-product")
 	public ResponseEntity<ProductDTO> updateExistentProduct(@RequestBody ProductDTO updatedProduct) throws Exception {
-		ProductDTO updated = ProductServices.updateProduct(updatedProduct);
+		ProductDTO updated = productServices.updateProduct(updatedProduct);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
 	@Operation(tags = {"Product"}, summary = "Delete one Product")
 	@DeleteMapping(path = "{productId}/delete-product/ ")
 	public ResponseEntity<?> deleteProduct(@PathVariable Long ProductId) throws Exception {
-		productServices.deleteProduct(ProductId);
+		productServices.deleteProductById(ProductId);
 		return ResponseEntity.noContent().build();
 	}
-	
-	@Operation(tags = {"Product"}, summary = "Update salary of one Product")
-	@PutMapping(path = "/update-Product-salary")
-	public ResponseEntity<ProductDTO> updateSalary(@RequestParam Long id, @RequestParam Double newSalary) throws Exception {
-	    ProductDTO updatedProduct = ProductServices.updateProductSalary(id, newSalary);
-	    return ResponseEntity.ok().body(updatedProduct);
-	}
+
 	
 	//Metodoa implementar 
 	
@@ -71,5 +65,5 @@ public class ProductController {
 	
 	//2 -> Calcular comissão baseada em vendas
 	
-
+  //11
 }

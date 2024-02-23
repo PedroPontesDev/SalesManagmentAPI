@@ -16,11 +16,11 @@ public interface ProductManagment {
 
 	List<ProductDTO> findMostSalleds(Long stockId) throws Exception;;
 
-	ProductDTO registerProduct(ProductDTO newProduct) throws Exception;
+	ProductDTO registerProductInStock(ProductDTO newProduct, Long stockId) throws Exception;
 
-	ProductDTO updateProduct(ProductDTO product) throws Exception;;
+	ProductDTO updateProductInStock(ProductDTO product, Long stockId) throws Exception;;
 
-	void deleteProductById(Long id) throws Exception;
+	void deleteProductByIdInStock(Long prodcutId, Long stockId) throws Exception;
 
 	boolean verifyInStock(Long stockId, Long productId) throws Exception;;
 
