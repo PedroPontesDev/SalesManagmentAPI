@@ -35,29 +35,35 @@ public class ProductController {
 		List<ProductDTO> all = productServices.findAll();
 		return new ResponseEntity<>(all, HttpStatus.OK);
 	}
+	@Operation(tags = {"Product"}, description = "Retrieve one product by id")
+	@GetMapping(path = "/find-one/{productId}")
+	public ResponseEntity<ProductDTO> findProductById(@PathVariable Long productId) throws Exception {
+		var product = productServices.findProductById(productId);
+		return new ResponseEntity<>(product, HttpStatus.OK);
+	}
 	
 	@Operation(tags = {"Product"}, description = "Retrieve most expansives products in stock")
 	@GetMapping(path = "/find-expansives/{stockId}")
 	public ResponseEntity<List<ProductDTO>> findMostExpansives(@PathVariable Long stockId) throws Exception {
-		var prods = productServices.findMostExpansivesInStock(stockId);
-		return new ResponseEntity<>(prods, HttpStatus.OK);
+		var product = productServices.findMostExpansivesInStock(stockId);
+		return new ResponseEntity<>(product, HttpStatus.OK);
 	}
 	
 	@Operation(tags = {"Product"}, description = "Retrieve less expansives products in stock")
-	@GetMapping(path = "/find-less/{stockId}")
+	@GetMapping(path = "/find-less-expansives/{stockId}")
 	public ResponseEntity<List<ProductDTO>> findLessExpansivesInStock(@PathVariable Long stockId) throws Exception {
-		var prods = productServices.findLessExpansivesInStock(stockId);
-		return new ResponseEntity<>(prods, HttpStatus.OK);
+		var product = productServices.findLessExpansivesInStock(stockId);
+		return new ResponseEntity<>(product, HttpStatus.OK);
 	}
 
-	@Operation(tags = {"Product"}, summary = "Register one Product")
+	@Operation(tags = {"Product"}, summary = "Register one Product in a stock")
 	@PostMapping(path = "/register-product/{stockId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProductDTO> registerNewProduct(@RequestBody ProductDTO newProduct, @PathVariable Long stockId) throws Exception {
-		var Product = productServices.registerProductInStock(newProduct, stockId);
-		return new ResponseEntity<>(Product, HttpStatus.CREATED);
+		var product = productServices.registerProductInStock(newProduct, stockId);
+		return new ResponseEntity<>(product, HttpStatus.CREATED);
 	}
 	
-	@Operation(tags = {"Product"}, summary = "Update a existent Product")
+	@Operation(tags = {"Product"}, summary = "Update a existent Product in a stock")
 	@PutMapping(path = "/update-product/{stockId}")
 	public ResponseEntity<ProductDTO> updateExistentProduct(@RequestBody ProductDTO updatedProduct, @PathVariable Long stockId) throws Exception {
 		ProductDTO updated = productServices.updateProductInStock(updatedProduct, stockId);

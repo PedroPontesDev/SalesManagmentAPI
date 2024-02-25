@@ -19,20 +19,22 @@ public class ProductDTO {
 	private Double price;
 	@JsonProperty(value = "quantidadeDoProduto")
 	private Integer quantity;
-
 	@JsonProperty(value = "temEmEstoque")
 	private boolean hasInStock;
-
+	@JsonProperty(value = "NomeDoEstoque")
 	private String stockName;
+	@JsonProperty(value = "FrequenciaVendas")
+	private Long frequency;
 
 	public ProductDTO(Long id, String name, Double price, Integer quantity, boolean hasInStock, StockDTO stock,
-			Sale sale) {
+			Sale sale, Long frequency) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.quantity = quantity;
 		this.hasInStock = hasInStock;
 		this.stockName = stock.getStockName();
+		this.frequency = frequency;
 	}
 
 	public ProductDTO() {
@@ -61,6 +63,14 @@ public class ProductDTO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public Long getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(Long frequency) {
+		this.frequency = frequency;
 	}
 
 	public Double getPrice() {

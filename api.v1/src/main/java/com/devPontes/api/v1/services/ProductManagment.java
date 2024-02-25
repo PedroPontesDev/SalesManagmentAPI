@@ -16,7 +16,7 @@ public interface ProductManagment {
 
 	List<ProductDTO> findLessExpansivesInStock(Long stockId) throws Exception;
 
-	List<ProductDTO> findMostSalleds(Long stockId) throws Exception;;
+	List<ProductDTO> findTop5MostFrequentProducts() throws Exception;;
 
 	ProductDTO registerProductInStock(ProductDTO newProduct, Long stockId) throws Exception;
 

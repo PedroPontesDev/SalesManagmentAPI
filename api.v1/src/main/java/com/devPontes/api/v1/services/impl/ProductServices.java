@@ -1,9 +1,8 @@
 package com.devPontes.api.v1.services.impl;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.entities.Product;
-import com.devPontes.api.v1.model.entities.Sale;
 import com.devPontes.api.v1.model.entities.Stock;
 import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.repositories.ProductRepositories;
@@ -73,26 +71,6 @@ public class ProductServices implements ProductManagment {
 	}
 
 	@Override
-	public List<ProductDTO> findMostSalleds(Long stockId) {
-		List<Sale> sales = saleRepositories.findAll();
-
-		Map<Product, Integer> productFrequency = new HashMap<>();
-		for (Sale sale : sales) {
-			List<Product> products = sale.getItems();
-			for (Product items : products) {
-				productFrequency.put(items, productFrequency.getOrDefault(items, 0) + 1);
-			}
-		}
-
-		List<Product> mostSoldProducts = productFrequency.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Map.Entry::getKey)
-				.collect(Collectors.toList());
-
-		return MyMapper.parseListObjects(mostSoldProducts, ProductDTO.class);
-
-	}
-
-	@Override
 	public ProductDTO registerProductInStock(ProductDTO newProduct, Long stockId) throws Exception {
 		var stock = stockRepositories.findById(stockId);
 		if (newProduct != null && stock.isPresent() && !stock.get().isStockFull()) {
@@ -130,49 +108,63 @@ public class ProductServices implements ProductManagment {
 
 	@Override
 	public void deleteProductByIdInStock(Long id, Long stockId) {
-	   var optionalStock = stockRepositories.findById(stockId);
-	   var optionalProduct = productRepositories.findById(id);
-	    if (optionalStock.isPresent() && optionalProduct.isPresent()) {
-	        Stock stock = optionalStock.get();
-	        Product product = optionalProduct.get();
-	        if (product.getStock().getId().equals(stockId)) {
-	            stock.getProductsInStock().remove(product);
-	            stockRepositories.save(stock);
-	        } else {
-	            throw new IllegalArgumentException("O produto não pertence ao estoque especificado");
-	        }
-	    } else {
-	        throw new NoSuchElementException("Produto ou estoque não encontrado");
-	    }
+		var optionalStock = stockRepositories.findById(stockId);
+		var optionalProduct = productRepositories.findById(id);
+		if (optionalStock.isPresent() && optionalProduct.isPresent()) {
+			Stock stock = optionalStock.get();
+			Product product = optionalProduct.get();
+			if (product.getStock().getId().equals(stockId)) {
+				stock.getProductsInStock().remove(product);
+				stockRepositories.save(stock);
+			} else {
+				throw new IllegalArgumentException("O produto não pertence ao estoque especificado");
+			}
+		} else {
+			throw new NoSuchElementException("Produto ou estoque não encontrado");
+		}
 	}
-
 
 	@Override
 	public boolean verifyInStock(Long stockId, Long productId) {
-	   var optionalStock = stockRepositories.findById(stockId);
-	   var optionalProduct = productRepositories.findById(productId);
-	    if (optionalStock.isPresent() && optionalProduct.isPresent()) {
-	        Stock stock = optionalStock.get();
-	        Product product = optionalProduct.get();
-	        if (product.getStock().getId().equals(stockId)) { // Verifica se o produto pertence ao estoque especificado
-	            return product.isHasInStock(); // Retorna true se o produto estiver em estoque ou false se não estiver
-	        } else {
-	            throw new IllegalArgumentException("O produto não pertence ao estoque especificado");
-	        }
-	    } else {
-	        throw new NoSuchElementException("Produto ou estoque não encontrado");
-	    }
+		var optionalStock = stockRepositories.findById(stockId);
+		var optionalProduct = productRepositories.findById(productId);
+		if (optionalStock.isPresent() && optionalProduct.isPresent()) {
+			Stock stock = optionalStock.get();
+			Product product = optionalProduct.get();
+			if (product.getStock().getId().equals(stockId)) { // Verifica se o produto pertence ao estoque especificado
+				return product.isHasInStock(); // Retorna true se o produto estiver em estoque ou false se não estiver
+			} else {
+				throw new IllegalArgumentException("O produto não pertence ao estoque especificado");
+			}
+		} else {
+			throw new NoSuchElementException("Produto ou estoque não encontrado");
+		}
 	}
 
 	@Override
 	public List<ProductDTO> findAll() throws Exception {
 		var prods = productRepositories.findAll();
-		if(prods != null) {
+		if (prods != null) {
 			return MyMapper.parseListObjects(prods, ProductDTO.class);
 		} else {
 			throw new Exception("Não foi possivel recuperar todos produtos");
 		}
 	}
 
+	@Override
+	public List<ProductDTO> findTop5MostFrequentProductnSale() throws Exception {
+		List<Object[]> results = saleRepositories.findTop5MostFrequentProduct();
+		List<ProductDTO> dtos = new ArrayList<>();
+		for (Object[] result : results) {
+			Long productId = (Long) result[0];
+			String productName = (String) result[1];
+			Double productPrice = (Double) result[2];
+			Long frequency = (Long) result[3];
 
+			ProductDTO dto = new ProductDTO(productId, productName, productPrice, null, false, null, null, frequency);
+			dtos.add(dto);
+		}
+
+		return dtos;
+	}
 }

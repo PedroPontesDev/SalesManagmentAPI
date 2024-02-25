@@ -1,7 +1,9 @@
 package com.devPontes.api.v1.model.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -34,20 +37,21 @@ public class Product implements Serializable {
     private Stock stock;
 
     @JsonIgnore
-    @ManyToOne
-    private Sale sale;
+    @ManyToMany(mappedBy = "items")
+    private Set<Sale> sales = new HashSet<>();
+    
+    public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock,
+			Set<Sale> sales) {
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.quantity = quantity;
+		this.hasInStock = hasInStock;
+		this.stock = stock;
+		this.sales = sales;
+	}
 
-    public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock, Sale sale) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.hasInStock = hasInStock;
-        this.stock = stock;
-        this.sale = sale;
-    }
-
-    public Product() {
+	public Product() {
 
     }
 
@@ -120,10 +124,11 @@ public class Product implements Serializable {
         return Objects.equals(id, other.id);
     }
 
-    @Override
-    public String toString() {
-        return "Product [id=" + id + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", hasInStock="
-                + hasInStock + ", stock=" + stock + "]";
-    }
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", hasInStock="
+				+ hasInStock + ", stock=" + stock + ", sales=" + sales + "]";
+	}
+    
 
 }
