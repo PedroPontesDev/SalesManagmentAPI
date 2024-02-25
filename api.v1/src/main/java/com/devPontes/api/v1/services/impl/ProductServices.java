@@ -152,7 +152,7 @@ public class ProductServices implements ProductManagment {
 	}
 
 	@Override
-	public List<ProductDTO> findTop5MostFrequentProductnSale() throws Exception {
+	public List<ProductDTO> findTop5MostFrequentProducts() throws Exception {
 		List<Object[]> results = saleRepositories.findTop5MostFrequentProduct();
 		List<ProductDTO> dtos = new ArrayList<>();
 		for (Object[] result : results) {

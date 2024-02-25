@@ -52,6 +52,10 @@ public class Sale implements Serializable {
 		this.sellerWhoSale = seller;
 		this.value = value;
 	}
+	
+	public Sale() {
+		
+	}
 
 	public Long getId() {
 		return id;

@@ -14,7 +14,7 @@ public interface SaleRepositories extends JpaRepository<Sale, Long> {
 
 	@Query(nativeQuery = true, value = "SELECT p.id, p.name, p.price, COUNT(sp.product_id) as frequency " +
 									   "FROM sale_product sp" +
-									   "INNER JOIN product p ON sp.product_id = p.id " +
+									   "INNER JOIN tb_product p ON sp.product_id = p.id " +
 									   "GROUP BY p.id " +
 									   "ORDER BY frequency DESC " +
 									   "LIMIT 5")

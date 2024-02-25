@@ -9,6 +9,12 @@ public interface SaleManagment {
 
 	SaleDTO findOneSaleById(Long id) throws Exception;
 	
+	// A implementar consultas personalizadas
+	
+	//como -> Procurar por vendas mais caras
+	// -> Descobrir qual mês mais vendeu
+	// -> Descobir o cliente mais ativo
+	
 	Set<SaleDTO> findAllSales() throws Exception;
 
 	SaleDTO registerNewSale(SaleDTO Sale) throws Exception;

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.devPontes.api.v1.model.entities.Client;
+import com.devPontes.api.v1.model.entities.Seller;
+
 public class SaleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -17,12 +20,12 @@ public class SaleDTO implements Serializable {
 
 	private List<ProductDTO> items = new ArrayList<>();
 	
-	public SaleDTO(Long id, LocalDateTime moment, Long sellerWhoSaleId, Long clientWhoBuyId, List<ProductDTO> items,
+	public SaleDTO(Long id, LocalDateTime moment, Seller sellerWhoSaleId, Client clientWhoBuyId, List<ProductDTO> items,
 			Double value) {
 		this.id = id;
 		this.moment = moment;
-		this.sellerWhoSaleId = sellerWhoSaleId;
-		this.clientWhoBuyId = clientWhoBuyId;
+		this.sellerWhoSaleId = sellerWhoSaleId.getId();
+		this.clientWhoBuyId = clientWhoBuyId.getId();
 		this.items = items;
 		this.value = value;
 	}
