@@ -1,14 +1,19 @@
 package com.devPontes.api.v1.services.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SaleDTO;
 import com.devPontes.api.v1.model.entities.Product;
 import com.devPontes.api.v1.model.entities.Sale;
+import com.devPontes.api.v1.model.entities.Stock;
 import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.repositories.ClientRepositories;
 import com.devPontes.api.v1.repositories.ProductRepositories;
@@ -49,26 +54,50 @@ public class SaleServices implements SaleManagment {
 
 	@Override
 	public SaleDTO registerNewSale(SaleDTO sale) throws Exception {
-	    if(sale == null || sale.getItems().isEmpty()) throw new Exception("Não foi possível registrar uma nova venda, verifique os dados e tente novamente!");
-	    else {
-	        var entity = MyMapper.parseObject(sale, Sale.class);
-	        // Obter o cliente e vendedor da base de dados
-	        var client = clientesRepositories.findById(sale.getClientWhoBuyId());
-	        var seller = sellersRepository.findById(sale.getSellerId()).orElseThrow(() -> new Exception("Vendedor não encontrado"));
-	        entity.setClientWhoBuy(client);
-	        entity.setSellerWhoSale(seller);
+	    if (sale == null || sale.getItems() == null || sale.getItems().isEmpty()) {
+	        throw new Exception("Não foi possível registrar uma nova venda, verifique os dados e tente novamente!");
+	    } else {
+	        // Obtendo os IDs dos produtos a serem vendidos
+	        List<Long> productIds = sale.getItems().stream()
+	                                .map(ProductDTO::getId)
+	                                .collect(Collectors.toList());
 
-	        // Calcular o valor total da venda com base nos produtos e quantidades
-	        double totalValue = entity.getItems().stream().mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity()).sum();
+	        // Verificando se os produtos existem no estoque
+	        List<Product> products = productsRepositories.findAllById(productIds);
+	        if (products.size() != sale.getItems().size()) {
+	            throw new Exception("Alguns produtos não foram encontrados no estoque!");
+	        }
+
+	        // Calculando o valor total da venda
+	        Double totalValue = sale.getItems().stream()
+	                                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+	                                .sum();
+
+	        // Criando a venda
+	        Sale entity = new Sale();
+	        entity.setMoment(LocalDateTime.now());
+	        entity.setItems(products);
 	        entity.setValue(totalValue);
 
-	        // Salvar a venda
-	        var savedEntity = salesRepository.save(entity);
+	        // Salvando a venda no banco de dados
+	        salesRepositories.save(entity);
 
-	        // Retornar a venda salva
-	        return MyMapper.parseObject(savedEntity, SaleDTO.class);
+	        // Atualizando o estoque
+	        int totalQuantitySold = 0;
+	        for (Product product : products) {
+	        	totalQuantitySold += product.getQuantity();
+	            Stock stock = product.getStock();
+	            if (totalQuantitySold > stock.getCurrentCapacity()) {
+	                throw new Exception("A quantidade de produtos vendidos é maior que a quantidade disponível no estoque!");
+	            }
+	            stock.setCurrentCapacity(stock.getCurrentCapacity() - product.getQuantity());
+	            stockRepositories.save(stock);
+	        }
+
+	        return MyMapper.parseObject(entity, SaleDTO.class);
 	    }
 	}
+
 
 	@Override
 	public SaleDTO updateExistentSale(SaleDTO sale) throws Exception {

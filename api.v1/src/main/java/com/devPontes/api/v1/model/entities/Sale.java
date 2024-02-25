@@ -9,6 +9,7 @@ import java.util.Objects;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +38,7 @@ public class Sale implements Serializable {
 	@OneToOne
 	private Client clientWhoBuy;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = )
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "sale_product", 
 			   joinColumns = @JoinColumn(name = "sale_id"),
 			   inverseJoinColumns = @JoinColumn(name = "product_id"))
