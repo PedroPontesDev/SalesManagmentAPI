@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,7 +37,7 @@ public class Sale implements Serializable {
 	@OneToOne
 	private Client clientWhoBuy;
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = )
 	@JoinTable(name = "sale_product", 
 			   joinColumns = @JoinColumn(name = "sale_id"),
 			   inverseJoinColumns = @JoinColumn(name = "product_id"))

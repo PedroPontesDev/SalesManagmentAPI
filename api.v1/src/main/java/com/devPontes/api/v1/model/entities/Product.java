@@ -7,7 +7,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +39,7 @@ public class Product implements Serializable {
     private Stock stock;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "items")
+    @ManyToMany(mappedBy = "items", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Sale> sales = new HashSet<>();
     
     public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock,
