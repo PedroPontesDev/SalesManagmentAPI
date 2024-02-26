@@ -21,9 +21,8 @@ public class ProductDTO {
 	private Integer quantity;
 	@JsonProperty(value = "temEmEstoque")
 	private boolean hasInStock;
-	@JsonProperty(value = "NomeDoEstoque")
+	@JsonProperty(value = "nomeDoEstoque")
 	private String stockName;
-	@JsonProperty(value = "FrequenciaVendas")
 	private Long frequency;
 
 	public ProductDTO(Long id, String name, Double price, Integer quantity, boolean hasInStock, StockDTO stock,

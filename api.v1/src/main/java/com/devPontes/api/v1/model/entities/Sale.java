@@ -45,14 +45,18 @@ public class Sale implements Serializable {
 	private List<Product> items = new ArrayList<>();
 
 	private Double value;
+	
+	@Column(name = "has_completed")
+	private Boolean completed;
 
-	public Sale(Long id, LocalDateTime moment, Client client, List<Product> items, Seller seller, Double value) {
+	public Sale(Long id, Boolean completed, LocalDateTime moment, Client client, List<Product> items, Seller seller, Double value) {
 		this.id = id;
 		this.moment = moment.now();
 		this.clientWhoBuy = client;
 		this.items = items;
 		this.sellerWhoSale = seller;
 		this.value = value;
+		this.completed = completed;
 	}
 	
 	public Sale() {
@@ -65,6 +69,17 @@ public class Sale implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+
+	public Boolean isCompleted(Double value) {
+		if(value != null){
+			return true;
+		} return false;
+	}
+
+	public void setCompleted(Boolean completed) {
+		this.completed = completed;
 	}
 
 	public LocalDateTime getMoment() {
