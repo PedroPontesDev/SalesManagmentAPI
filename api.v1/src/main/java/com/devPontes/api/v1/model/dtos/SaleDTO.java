@@ -18,12 +18,15 @@ public class SaleDTO implements Serializable {
 
 	private Long id;
 	private LocalDate moment;
+	
 	private Seller sellerWhoSale;
-
 	private Client clientWhoBuy;
-	private Double value;
+	private Double totalValueOfsale;
 
 	private List<ProductDTO> items = new ArrayList<>();
+
+	private Boolean completed;
+	
 
 	public SaleDTO(Long id, LocalDate moment, Seller sellerWhoSaleId, Client clientWhoBuyId, List<ProductDTO> items,
 			Double value) {
@@ -32,7 +35,7 @@ public class SaleDTO implements Serializable {
 		this.sellerWhoSale = sellerWhoSaleId;
 		this.clientWhoBuy = clientWhoBuyId;
 		this.items = items;
-		this.value = value;
+		this.totalValueOfsale = value;
 	}
 
 	public SaleDTO() {
@@ -79,12 +82,21 @@ public class SaleDTO implements Serializable {
 		this.items = items;
 	}
 
-	public Double getValue() {
-		return value;
+
+	public Double getTotalValueOfsale() {
+		return totalValueOfsale;
 	}
 
-	public void setValue(Double value) {
-		this.value = value;
+	public void setTotalValueOfsale(Double totalValueOfsale) {
+		this.totalValueOfsale = totalValueOfsale;
+	}
+
+	public Boolean getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(Boolean completed) {
+		this.completed = completed;
 	}
 
 	@Override
@@ -106,8 +118,8 @@ public class SaleDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "SaleDTO [id=" + id + ", moment=" + moment + ", sellerWhoSaleId=" + sellerWhoSaleId + ", clientWhoBuyId="
-				+ clientWhoBuyId + ", items=" + items + ", value=" + value + "]";
+		return "SaleDTO [id=" + id + ", moment=" + moment + ", sellerWhoSale=" + sellerWhoSale + ", clientWhoBuy="
+				+ clientWhoBuy + ", totalValueOfsale=" + totalValueOfsale + ", items=" + items + ", completed="
+				+ completed + "]";
 	}
-
 }

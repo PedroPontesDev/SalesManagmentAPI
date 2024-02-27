@@ -1,6 +1,7 @@
 package com.devPontes.api.v1.model.entities;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ public class Sale implements Serializable {
 	private Long id;
 
 	@Column(name = "moment_of_sale")
-	private static LocalDate moment;
+	private static Instant moment;
 
 	@ManyToOne
 	private Seller sellerWhoSale;
@@ -45,12 +46,12 @@ public class Sale implements Serializable {
 	private List<Product> items = new ArrayList<>();
 
 	@Column(name = "has_completed")
-	private Boolean completed;
+	private static Boolean completed;
 
 	@Column(name = "total_value_of_sale")
 	private Double totalValueOfsale;
 
-	public Sale(Long id, LocalDate moment, Seller sellerWhoSale, Client clientWhoBuy, List<Product> items,
+	public Sale(Long id, Instant moment, Seller sellerWhoSale, Client clientWhoBuy, List<Product> items,
 			Boolean completed, Double totalValueOfsale) {
 		this.id = id;
 		this.moment = moment;
@@ -89,11 +90,11 @@ public class Sale implements Serializable {
 	}
 
 	@SuppressWarnings("static-access")
-	public static LocalDate getMoment() {
-		return moment.now();
+	public static Instant getMoment() {
+		return  moment;
 	}
 
-	public void setMoment(LocalDate moment) {
+	public void setMoment(Instant moment) {
 		this.moment = moment;
 	}
 
@@ -130,7 +131,9 @@ public class Sale implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	public static void initTransaction(LocalDate moment, Sale sale, Seller seller, Client client, Stock stock) throws Exception {
+	public static boolean initTransaction(Instant moment, Sale sale, Seller seller, Client client, Stock stock)
+			throws Exception {
+		boolean finishTransaction = false;
 		if (sale.getMoment().isEqual(getMoment())) {
 			Sale newSale = new Sale();
 			if (newSale.getTotalValueOfsale() == 0.0 && newSale == null) {
@@ -138,17 +141,20 @@ public class Sale implements Serializable {
 				newSale.setSellerWhoSale(seller);
 				Stock newStock = stock;
 				if (!newStock.isStockFull()) {
-					for (Product product : newStock.getProductsInStock()) {
-						Double counter = newSale.items.stream().mapToDouble(Product::getPrice).sum();
-						newSale.setTotalValueOfsale(counter);
-						boolean completeTransaction = sale.isCompleted(counter);
-						return;
+					for (Product product : newStock.getProductsInStock()) {	
+						double counter = newSale.items.stream().mapToDouble(Product::getPrice).sum();
+				     	newSale.setTotalValueOfsale(counter);
+				     	newSale.setCompleted(completed);
+				     	Integer capacity =	newStock.getCurrentCapacity();
+				     	Integer newcapcitiyAftersale = newSale.getItems().stream().mapToInt(Product::getQuantity).sum();
+				     	Integer newcap = newcapcitiyAftersale - capacity; 
+				     	newStock.setCurrentCapacity(newcap);
+				     	return true;
 					}
-				} else {
-					throw new Exception("");
 				}
 			}
 		}
+		return finishTransaction;
 	}
 
 	@Override
