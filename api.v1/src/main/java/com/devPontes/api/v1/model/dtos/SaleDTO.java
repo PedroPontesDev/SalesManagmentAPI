@@ -1,6 +1,7 @@
 package com.devPontes.api.v1.model.dtos;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,23 +10,27 @@ import java.util.Objects;
 import com.devPontes.api.v1.model.entities.Client;
 import com.devPontes.api.v1.model.entities.Seller;
 
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
 public class SaleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	private LocalDateTime moment;
-	private Long sellerWhoSaleId;
-	private Long clientWhoBuyId;
+	private LocalDate moment;
+	private Seller sellerWhoSale;
+
+	private Client clientWhoBuy;
 	private Double value;
 
 	private List<ProductDTO> items = new ArrayList<>();
-	
-	public SaleDTO(Long id, LocalDateTime moment, Seller sellerWhoSaleId, Client clientWhoBuyId, List<ProductDTO> items,
+
+	public SaleDTO(Long id, LocalDate moment, Seller sellerWhoSaleId, Client clientWhoBuyId, List<ProductDTO> items,
 			Double value) {
 		this.id = id;
 		this.moment = moment;
-		this.sellerWhoSaleId = sellerWhoSaleId.getId();
-		this.clientWhoBuyId = clientWhoBuyId.getId();
+		this.sellerWhoSale = sellerWhoSaleId;
+		this.clientWhoBuy = clientWhoBuyId;
 		this.items = items;
 		this.value = value;
 	}
@@ -42,28 +47,28 @@ public class SaleDTO implements Serializable {
 		this.id = id;
 	}
 
-	public LocalDateTime getMoment() {
+	public LocalDate getMoment() {
 		return moment;
 	}
 
-	public void setMoment(LocalDateTime moment) {
+	public void setMoment(LocalDate moment) {
 		this.moment = moment;
 	}
 
-	public Long getSellerWhoSaleId() {
-		return sellerWhoSaleId;
+	public Seller getSellerWhoSale() {
+		return sellerWhoSale;
 	}
 
-	public void setSellerWhoSaleId(Long sellerWhoSaleId) {
-		this.sellerWhoSaleId = sellerWhoSaleId;
+	public void setSellerWhoSale(Seller sellerWhoSale) {
+		this.sellerWhoSale = sellerWhoSale;
 	}
 
-	public Long getClientWhoBuyId() {
-		return clientWhoBuyId;
+	public Client getClientWhoBuy() {
+		return clientWhoBuy;
 	}
 
-	public void setClientWhoBuyId(Long clientWhoBuyId) {
-		this.clientWhoBuyId = clientWhoBuyId;
+	public void setClientWhoBuy(Client clientWhoBuy) {
+		this.clientWhoBuy = clientWhoBuy;
 	}
 
 	public List<ProductDTO> getItems() {

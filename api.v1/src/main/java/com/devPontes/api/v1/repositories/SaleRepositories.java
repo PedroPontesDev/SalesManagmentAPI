@@ -22,4 +22,6 @@ public interface SaleRepositories extends JpaRepository<Sale, Long> {
      
 	 @Query(nativeQuery = true, value = "SELECT * FROM tb_sales")
 	 Set<Sale> saleSet();
+	 
+	 
 }
