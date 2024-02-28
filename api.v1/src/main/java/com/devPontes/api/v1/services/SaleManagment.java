@@ -16,7 +16,7 @@ public interface SaleManagment {
 
 	SaleDTO updateExistentSale(SaleDTO Sale) throws Exception;
 
-	SaleDTO registerNewSale(SaleDTO newsale, Long stockId, Long clientId, Long sellerId) throws Exception;
+	SaleDTO registerNewSale(SaleDTO newsale, Long stockId, Long sellerId) throws Exception;
 	
 	Set<SaleDTO> findWhoMounthHaveMoreSale(SaleDTO sale, LocalDate now, LocalDate datesOfSale);
 

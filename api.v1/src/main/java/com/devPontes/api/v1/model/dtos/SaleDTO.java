@@ -1,13 +1,13 @@
 package com.devPontes.api.v1.model.dtos;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.devPontes.api.v1.model.entities.Client;
 import com.devPontes.api.v1.model.entities.Seller;
 
 import jakarta.persistence.ManyToOne;
@@ -17,25 +17,22 @@ public class SaleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	private LocalDate moment;
-	
-	private Seller sellerWhoSale;
-	private Client clientWhoBuy;
-	private Double totalValueOfsale;
-
-	private List<ProductDTO> items = new ArrayList<>();
-
+	private Instant moment;
+	private SellerDTO sellerWhoSale;
+	private ClientDTO ClientWhoBuy;
+	private List<ProductDTO> items;
+	private Double totalValueOfSale;
 	private Boolean completed;
-	
 
-	public SaleDTO(Long id, LocalDate moment, Seller sellerWhoSaleId, Client clientWhoBuyId, List<ProductDTO> items,
-			Double value) {
+	public SaleDTO(Long id, Instant moment, SellerDTO sellerWhoSale, ClientDTO ClientWhoBuy, List<ProductDTO> items,
+			Double totalValueOfSale, Boolean completed) {
 		this.id = id;
 		this.moment = moment;
-		this.sellerWhoSale = sellerWhoSaleId;
-		this.clientWhoBuy = clientWhoBuyId;
+		this.sellerWhoSale = sellerWhoSale;
+		this.ClientWhoBuy = ClientWhoBuy;
 		this.items = items;
-		this.totalValueOfsale = value;
+		this.totalValueOfSale = totalValueOfSale;
+		this.completed = completed;
 	}
 
 	public SaleDTO() {
@@ -50,28 +47,28 @@ public class SaleDTO implements Serializable {
 		this.id = id;
 	}
 
-	public LocalDate getMoment() {
+	public Instant getMoment() {
 		return moment;
 	}
 
-	public void setMoment(LocalDate moment) {
+	public void setMoment(Instant moment) {
 		this.moment = moment;
 	}
 
-	public Seller getSellerWhoSale() {
+	public SellerDTO getSellerWhoSale() {
 		return sellerWhoSale;
 	}
 
-	public void setSellerWhoSale(Seller sellerWhoSale) {
+	public void setSellerWhoSale(SellerDTO sellerWhoSale) {
 		this.sellerWhoSale = sellerWhoSale;
 	}
 
-	public Client getClientWhoBuy() {
-		return clientWhoBuy;
+	public ClientDTO getClientWhoBuy() {
+		return ClientWhoBuy;
 	}
 
-	public void setClientWhoBuy(Client clientWhoBuy) {
-		this.clientWhoBuy = clientWhoBuy;
+	public void setClientWhoBuy(ClientDTO clientWhoBuy) {
+		ClientWhoBuy = clientWhoBuy;
 	}
 
 	public List<ProductDTO> getItems() {
@@ -82,13 +79,12 @@ public class SaleDTO implements Serializable {
 		this.items = items;
 	}
 
-
-	public Double getTotalValueOfsale() {
-		return totalValueOfsale;
+	public Double getTotalValueOfSale() {
+		return totalValueOfSale;
 	}
 
-	public void setTotalValueOfsale(Double totalValueOfsale) {
-		this.totalValueOfsale = totalValueOfsale;
+	public void setTotalValueOfSale(Double totalValueOfSale) {
+		this.totalValueOfSale = totalValueOfSale;
 	}
 
 	public Boolean getCompleted() {
@@ -118,8 +114,10 @@ public class SaleDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "SaleDTO [id=" + id + ", moment=" + moment + ", sellerWhoSale=" + sellerWhoSale + ", clientWhoBuy="
-				+ clientWhoBuy + ", totalValueOfsale=" + totalValueOfsale + ", items=" + items + ", completed="
+		return "SaleDTO [id=" + id + ", moment=" + moment + ", sellerWhoSale=" + sellerWhoSale + ", ClientWhoBuy="
+				+ ClientWhoBuy + ", items=" + items + ", totalValueOfSale=" + totalValueOfSale + ", completed="
 				+ completed + "]";
 	}
+
+	
 }

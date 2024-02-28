@@ -10,18 +10,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder(value = { "id", "name", "quantity", "price", "hasInStock" })
 public class ProductDTO {
 
-	@JsonProperty(value = "id")
 	private Long id;
 
-	@JsonProperty(value = "nomeDoProduto")
 	private String name;
-	@JsonProperty(value = "valorDoProduto")
 	private Double price;
-	@JsonProperty(value = "quantidadeDoProduto")
 	private Integer quantity;
-	@JsonProperty(value = "temEmEstoque")
 	private boolean hasInStock;
-	@JsonProperty(value = "nomeDoEstoque")
 	private String stockName;
 	private Long frequency;
 

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,13 +27,13 @@ public class Client implements Serializable{
 	@Column(name = "full_name")
 	private String fullName;
 	@Column(name = "cpf")
-	private Long cpf;
+	private String cpf;
 	
 	@JsonIgnore
-	@OneToOne(mappedBy = "clientWhoBuy")
+	@OneToOne(mappedBy = "clientWhoBuy", cascade = CascadeType.MERGE)
 	private Sale sale;
 
-	public Client(Long id, String fullName, Long cpf, Sale sale) {
+	public Client(Long id, String fullName, String cpf, Sale sale) {
 		this.id = id;
 		this.fullName = fullName;
 		this.cpf = cpf;
@@ -59,11 +60,11 @@ public class Client implements Serializable{
 		this.fullName = fullName;
 	}
 
-	public Long getCpf() {
+	public String getCpf() {
 		return cpf;
 	}
 
-	public void setCpf(Long cpf) {
+	public void setCpf(String cpf) {
 		this.cpf = cpf;
 	}
 

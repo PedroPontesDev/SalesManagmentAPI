@@ -34,12 +34,12 @@ public class Product implements Serializable {
     private boolean hasInStock; // If quantity in stock = 0, so we dont have in stock - Logicals
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "items", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "items", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Sale> sales = new HashSet<>();
     
     public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock,

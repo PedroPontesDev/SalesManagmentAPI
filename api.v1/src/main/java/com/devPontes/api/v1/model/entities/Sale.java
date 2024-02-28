@@ -1,10 +1,7 @@
 package com.devPontes.api.v1.model.entities;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +30,7 @@ public class Sale implements Serializable {
 	private Long id;
 
 	@Column(name = "moment_of_sale")
-	private static Instant moment;
+	private Instant moment;
 
 	@ManyToOne
 	private Seller sellerWhoSale;
@@ -41,12 +38,12 @@ public class Sale implements Serializable {
 	@OneToOne
 	private Client clientWhoBuy;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinTable(name = "sale_product", joinColumns = @JoinColumn(name = "sale_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private List<Product> items = new ArrayList<>();
 
 	@Column(name = "has_completed")
-	private static Boolean completed;
+	private Boolean completed;
 
 	@Column(name = "total_value_of_sale")
 	private Double totalValueOfsale;
@@ -54,7 +51,7 @@ public class Sale implements Serializable {
 	public Sale(Long id, Instant moment, Seller sellerWhoSale, Client clientWhoBuy, List<Product> items,
 			Boolean completed, Double totalValueOfsale) {
 		this.id = id;
-		this.moment = moment;
+		this.moment = moment.now();
 		this.sellerWhoSale = sellerWhoSale;
 		this.clientWhoBuy = clientWhoBuy;
 		this.items = items;
@@ -74,28 +71,20 @@ public class Sale implements Serializable {
 		this.id = id;
 	}
 
-	public Boolean hasCompleted() {
-		return completed;
-	}
-
-	public Boolean isCompleted(Double value) {
-		if (value != null) {
-			return true;
-		}
-		return false;
+	public Boolean isCompleted() {
+		return totalValueOfsale != null && totalValueOfsale > 0.0;
 	}
 
 	public void setCompleted(Boolean completed) {
 		this.completed = completed;
 	}
 
-	@SuppressWarnings("static-access")
-	public static Instant getMoment() {
-		return  moment;
+	public Instant getMoment() {
+		return moment.now();
 	}
 
 	public void setMoment(Instant moment) {
-		this.moment = moment;
+		this.moment = moment.now();
 	}
 
 	public Seller getSellerWhoSale() {
@@ -128,33 +117,6 @@ public class Sale implements Serializable {
 
 	public void setTotalValueOfsale(Double totalValueOfsale) {
 		this.totalValueOfsale = totalValueOfsale;
-	}
-
-	@SuppressWarnings("unused")
-	public static boolean initTransaction(Instant moment, Sale sale, Seller seller, Client client, Stock stock)
-			throws Exception {
-		boolean finishTransaction = false;
-		if (sale.getMoment().isEqual(getMoment())) {
-			Sale newSale = new Sale();
-			if (newSale.getTotalValueOfsale() == 0.0 && newSale == null) {
-				newSale.setClientWhoBuy(client);
-				newSale.setSellerWhoSale(seller);
-				Stock newStock = stock;
-				if (!newStock.isStockFull()) {
-					for (Product product : newStock.getProductsInStock()) {	
-						double counter = newSale.items.stream().mapToDouble(Product::getPrice).sum();
-				     	newSale.setTotalValueOfsale(counter);
-				     	newSale.setCompleted(completed);
-				     	Integer capacity =	newStock.getCurrentCapacity();
-				     	Integer newcapcitiyAftersale = newSale.getItems().stream().mapToInt(Product::getQuantity).sum();
-				     	Integer newcap = newcapcitiyAftersale - capacity; 
-				     	newStock.setCurrentCapacity(newcap);
-				     	return true;
-					}
-				}
-			}
-		}
-		return finishTransaction;
 	}
 
 	@Override

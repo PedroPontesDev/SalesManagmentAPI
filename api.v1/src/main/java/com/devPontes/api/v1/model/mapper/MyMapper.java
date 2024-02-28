@@ -1,9 +1,14 @@
 package com.devPontes.api.v1.model.mapper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+
+import com.devPontes.api.v1.model.dtos.SaleDTO;
+import com.devPontes.api.v1.model.entities.Sale;
 
 public class MyMapper {
 
@@ -19,6 +24,14 @@ public class MyMapper {
 			destinationObjects.add(mapper.map(o, destination));
 		}
 		return destinationObjects;
+	}
+
+	public static <O, D> Set<D> parseSetObjects(Set<O> origin, Class<D> destination) {
+	    Set<D> destinationObjects = new HashSet<>();
+	    for (O o : origin) {
+	        destinationObjects.add(mapper.map(o, destination));
+	    }
+	    return destinationObjects;
 	}
 
 }
