@@ -27,7 +27,7 @@ public class Stock {
     private String stockName;
 
     @Column(name = "current_capacity")
-    private Integer currentCapacity;
+    private Long currentCapacity;
 
     @Column(name = "capacity_max")
     private Integer capacityMax;
@@ -39,7 +39,7 @@ public class Stock {
     @OneToMany(mappedBy = "stock")
     private List<Product> productsInStock;
 
-    public Stock(Long id, String name, Integer capacityMax, Integer currentCapacity, Double totalPriceInStock,
+    public Stock(Long id, String name, Integer capacityMax, Long currentCapacity, Double totalPriceInStock,
             List<Product> products) {
         this.id = id;
         this.capacityMax = capacityMax;
@@ -79,16 +79,15 @@ public class Stock {
         this.capacityMax = capacityMax;
     }
 
-    public Integer getCurrentCapacity() {
+    public Long getCurrentCapacity() {
         return currentCapacity = this.getProductsInStock()
         								.stream()
-        								.mapToInt(p -> p.getQuantity())
-        								.sum();
-        
+        								.map(Product::getQuantity)
+        								.collect(Collectors.counting());
     }
         								
 
-    public void setCurrentCapacity(Integer currentCapacity) {
+    public void setCurrentCapacity(Long currentCapacity) {
         this.currentCapacity = currentCapacity;
     }
 

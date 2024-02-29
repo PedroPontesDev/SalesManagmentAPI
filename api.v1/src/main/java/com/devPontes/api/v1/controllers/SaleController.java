@@ -1,7 +1,5 @@
 package com.devPontes.api.v1.controllers;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devPontes.api.v1.model.dtos.SaleDTO;
@@ -36,8 +35,8 @@ public class SaleController {
 	}
 
 	@Operation(tags = {"Sale"}, description = "Register a new Sale")
-	@PostMapping(path = "/register-sale/{stockId}/{sellerId}")
-	public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @PathVariable Long stockId, @PathVariable Long sellerId) throws Exception {
+	@PostMapping(path = "/register-sale")
+	public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @RequestParam Long stockId, @RequestParam Long sellerId) throws Exception {
 	    var sale = saleServices.registerNewSale(newSale, stockId, sellerId);
 	    var saleDTO = MyMapper.parseObject(sale, SaleDTO.class); // ou algum outro método que transforma Sale em SaleDTO
 	    return new ResponseEntity<>(saleDTO, HttpStatus.CREATED);

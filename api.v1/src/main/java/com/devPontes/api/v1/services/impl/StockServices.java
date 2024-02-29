@@ -129,9 +129,9 @@ public class StockServices implements StockManagment {
 				Product newProd = MyMapper.parseObject(newProduct, Product.class);
 				newProd.setStock(stock);
 				newProd.getStock().getProductsInStock().add(newProd);
-				Integer in = stock.getProductsInStock()
+				Long in = stock.getProductsInStock()
 						.stream()
-						.mapToInt(Product::getQuantity)
+						.mapToLong(Product::getQuantity)
 						.sum() + newProd.getQuantity();
 				stock.setCurrentCapacity(in);
 				productsRepositories.save(newProd);
@@ -148,7 +148,7 @@ public class StockServices implements StockManagment {
 		var entity = productsRepositories.findById(productId);
 		var stock = stockRepositories.findById(stockId);
 		if (entity.isPresent()) {
-			Integer out = stock.get().getCurrentCapacity() - 1;
+			Long out = stock.get().getCurrentCapacity() - 1;
 			productsRepositories.delete(entity.get());
 		} else {
 			throw new Exception("Não foi possivel encontrar o produto pelo ID" + productId);

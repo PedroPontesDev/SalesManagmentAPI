@@ -2,12 +2,18 @@ package com.devPontes.api.v1.services.impl;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.ClientDTO;
+import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SaleDTO;
 import com.devPontes.api.v1.model.entities.Client;
 import com.devPontes.api.v1.model.entities.Product;
@@ -42,12 +48,16 @@ public class SaleServices implements SaleManagment {
 	@Autowired
 	private ClientRepositories clientsRepo;
 
+	private final Logger logger = LoggerFactory.getLogger(SaleServices.class);
+
 	@Override
 	public SaleDTO registerNewSale(SaleDTO newsale, Long stockId, Long sellerId) throws Exception {
 		Sale newSale = MyMapper.parseObject(newsale, Sale.class);
-		if (newSale == null) throw new Exception("Não foi possível registrar essa venda!");
-		if(processSale(Instant.now(), newsale, sellerId, stockId)) return MyMapper.parseObject(newSale, SaleDTO.class);
-		throw new Exception("A venda não foi processada, tente novamente!");
+		if (processSale(newsale, sellerId, stockId) && newSale != null) {
+			return MyMapper.parseObject(newSale, SaleDTO.class);
+		} else {
+			throw new Exception("A venda não foi processada, tente novamente!");
+		}
 	}
 
 	@Override
@@ -86,40 +96,21 @@ public class SaleServices implements SaleManagment {
 		return null;
 	}
 
+	@Override
 	@Transactional
-	public boolean processSale(Instant moment, SaleDTO newSale, Long sellerId, Long stockId) throws Exception {
-	    // Mapear as entidades vindas do Json
-        Stock newStock = stockRepositories.findById(stockId).orElseThrow(() -> new Exception("Estoque não encontrado!"));
-        Seller seller = sellerRepositories.findById(sellerId).orElseThrow(() -> new Exception("Vendedor não encontrado!"));
-        Sale sale = MyMapper.parseObject(newSale, Sale.class);
-        
-        if (sale == null || !newStock.isStockFull()) throw new Exception("Não foi possível registrar essa venda!");
-        
-        // Verificar se o cliente já existe no sistema
-        ClientDTO clientDTO = newSale.getClientWhoBuy();
-        Client client = null;
-        if (clientDTO != null && clientDTO.getId() != null) client = clientsRepo.findById(clientDTO.getId()).orElse(null);
-        if (client == null) {
-            client = MyMapper.parseObject(clientDTO, Client.class);
-            client = clientsRepo.save(client);
-        }
-        sale.setClientWhoBuy(client);
-	   
-        boolean allItemsAvailable = sale.getItems().stream().allMatch(item -> productsRepositories.findById(item.getId()).isPresent());
-	  
-	    if (allItemsAvailable && sale.getTotalValueOfsale() != 0.0) {
-	        sale.setItems(sale.getItems());
-	        sale.setCompleted(true);
-	        Integer capacity = newStock.getCurrentCapacity();
-	        Integer newCapacityAfterSale = capacity - sale.getItems().stream().mapToInt(Product::getQuantity).sum();
-	        newStock.setCurrentCapacity(newCapacityAfterSale);
-	        salesRepo.save(sale);
-	        return true;
-	    } else {
-	        throw new Exception("Alguns itens da venda não estão disponíveis no estoque!");
-	    }
+    public boolean processSale(SaleDTO newSale, Long sellerId, Long stockId) throws Exception {
+            Sale sale = MyMapper.parseObject(newSale, Sale.class);
+            if(sale != null) {
+            	var existStock = stockRepositories.findById(stockId);
+            	if(existStock.isPresent()) {
+            		Stock stock = existStock.get();
+            		for(Product item : stock.getProductsInStock()) {    //Verificar produtos de um determinado estoque, verificar se na venda os items estejam disponiveis no estoque
+            			List<Long> itemsId = sale.getItems().stream().map(Product::getId).toList();
+            		}
+            	}
+            	var itemsInSale = sale.getItems();
+            }
+            
+            return true;
 	}
-
-
-
 }

@@ -23,7 +23,7 @@ public class StockDTO extends RepresentationModel<StockDTO> implements Serializa
     private String stockName;
 
     @JsonProperty("capacidadeAtual")
-    private Integer currentCapacity;
+    private Long currentCapacity;
 
     @JsonProperty("capacidadeMaxima")
     private Integer capacityMax;
@@ -63,11 +63,11 @@ public class StockDTO extends RepresentationModel<StockDTO> implements Serializa
         this.stockName = stockName;
     }
 
-    public Integer getCurrentCapacity() {
+    public Long getCurrentCapacity() {
         return currentCapacity;
     }
 
-    public void setCurrentCapacity(Integer currentCapacity) {
+    public void setCurrentCapacity(Long currentCapacity) {
         this.currentCapacity = currentCapacity;
     }
 
