@@ -36,8 +36,11 @@ public class SaleController {
 
 	@Operation(tags = {"Sale"}, description = "Register a new Sale")
 	@PostMapping(path = "/register-sale")
-	public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @RequestParam Long stockId, @RequestParam Long sellerId) throws Exception {
-	    var sale = saleServices.registerNewSale(newSale, stockId, sellerId);
+	public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, 
+													@RequestParam Long stockId, 
+													@RequestParam Long sellerId, 
+													@RequestParam Long clientId)throws Exception {
+	    var sale = saleServices.registerNewSale(newSale, stockId, sellerId,clientId);
 	    var saleDTO = MyMapper.parseObject(sale, SaleDTO.class); // ou algum outro método que transforma Sale em SaleDTO
 	    return new ResponseEntity<>(saleDTO, HttpStatus.CREATED);
 	}

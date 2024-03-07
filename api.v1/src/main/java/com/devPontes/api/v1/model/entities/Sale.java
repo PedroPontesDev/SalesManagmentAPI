@@ -19,15 +19,15 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "tb_sales")
 public class Sale implements Serializable {
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
 	@Column(name = "moment_of_sale")
 	private Instant moment;
@@ -51,10 +51,10 @@ public class Sale implements Serializable {
 	public Sale(Long id, Instant moment, Seller sellerWhoSale, Client clientWhoBuy, List<Product> items,
 			Boolean completed, Double totalValueOfsale) {
 		this.id = id;
-		this.moment = moment.now();
+		this.moment = Instant.now();
 		this.sellerWhoSale = sellerWhoSale;
 		this.clientWhoBuy = clientWhoBuy;
-		this.items = items;
+		this.items = new ArrayList<>();
 		this.completed = completed;
 		this.totalValueOfsale = totalValueOfsale;
 	}
@@ -103,10 +103,12 @@ public class Sale implements Serializable {
 		this.clientWhoBuy = clientWhoBuy;
 	}
 
-	public List<Product> getItems() {
-		return items;
-	}
-
+    public List<Product> getItems() {
+        if (this.items == null) {
+            this.items = new ArrayList<>(); // Inicialize a lista se for nula
+        }
+        return this.items;
+    }
 	public void setItems(List<Product> items) {
 		this.items = items;
 	}

@@ -3,16 +3,15 @@ package com.devPontes.api.v1.services.impl;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.devPontes.api.v1.model.dtos.ClientDTO;
 import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SaleDTO;
 import com.devPontes.api.v1.model.entities.Client;
@@ -51,19 +50,74 @@ public class SaleServices implements SaleManagment {
 	private final Logger logger = LoggerFactory.getLogger(SaleServices.class);
 
 	@Override
-	public SaleDTO registerNewSale(SaleDTO newsale, Long stockId, Long sellerId) throws Exception {
-		Sale newSale = MyMapper.parseObject(newsale, Sale.class);
-		if (processSale(newsale, sellerId, stockId) && newSale != null) {
-			return MyMapper.parseObject(newSale, SaleDTO.class);
-		} else {
-			throw new Exception("A venda não foi processada, tente novamente!");
-		}
+	@Transactional
+	public SaleDTO registerNewSale(SaleDTO sale, Long stockId, Long sellerId, Long clientId) throws Exception {
+		 Sale newSale = MyMapper.parseObject(sale, Sale.class);
+		if (!verifyIfStockHasProducts(stockId, newSale)) {
+	        throw new Exception("Estoque sem produtos suficientes para venda!");
+	    }
+	    newSale.setSellerWhoSale(sellerRepositories.findById(sellerId).get());
+	    
+	    //Tratamento de cliente
+	    var client = clientsRepo.findById(clientId).get();
+	    newSale.setClientWhoBuy(client);
+	    newSale.setMoment(Instant.now());
+	    var counting = sale.getItems().stream()
+	    							  .mapToDouble(p -> p.getQuantity() * p.getPrice()).sum();
+	    newSale.setTotalValueOfsale(counting);
+
+	    // Chamar `processSale` para processar a venda e atualizar os níveis de estoque
+	    processSale(newSale);
+	    updateStockLevels(newSale, stockId);
+
+	    return MyMapper.parseObject(newSale, SaleDTO.class);
 	}
+
+
+	@Override
+	@Transactional
+	public void processSale(Sale sale) {
+	    // Persistir a venda
+		if(sale != null) 
+		sale.setCompleted(true);
+		salesRepo.save(sale);
+	}
+	
+	public boolean verifyIfStockHasProducts(Long stockId, Sale transSale) throws Exception{
+		var entity = stockRepositories.findById(stockId);
+		if (entity.isPresent()) {
+			Stock stock = entity.get();
+			if (!stock.getProductsInStock().isEmpty() && !transSale.getItems().isEmpty()) return true;
+		}
+		throw new Exception("Estoque não contem os itens da venda!");
+	}
+	
+	@Override
+	@Transactional
+	public void updateStockLevels(Sale sale, Long stockId) {
+		   // Obter o estoque
+	    var stock = stockRepositories.findById(stockId);
+	    // Iterar pelos itens da venda e adicionar uma frequencia
+	    for (Product item : sale.getItems()) {
+	        // Obter o produto do estoque
+	        Product product = stock.get().getProductsInStock().stream()
+	                .filter(p -> p.getId().equals(item.getId()))
+	                .findFirst().orElse(null);
+
+	        if (product != null) {
+	            // Atualizar a quantidade do produto no estoque
+	            product.setQuantity(product.getQuantity() - item.getQuantity());
+	            
+	        }
+	    }
+	    // Salvar o estoque atualizado
+	    stockRepositories.save(stock.get());
+	}                                          
 
 	@Override
 	public SaleDTO findOneSaleById(Long id) throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		return null;                     
 	}
 
 	@Override
@@ -97,20 +151,8 @@ public class SaleServices implements SaleManagment {
 	}
 
 	@Override
-	@Transactional
-    public boolean processSale(SaleDTO newSale, Long sellerId, Long stockId) throws Exception {
-            Sale sale = MyMapper.parseObject(newSale, Sale.class);
-            if(sale != null) {
-            	var existStock = stockRepositories.findById(stockId);
-            	if(existStock.isPresent()) {
-            		Stock stock = existStock.get();
-            		for(Product item : stock.getProductsInStock()) {    //Verificar produtos de um determinado estoque, verificar se na venda os items estejam disponiveis no estoque
-            			List<Long> itemsId = sale.getItems().stream().map(Product::getId).toList();
-            		}
-            	}
-            	var itemsInSale = sale.getItems();
-            }
-            
-            return true;
+	public void addFrequencyOfSellerOfSales(Long saleId) {
+		// TODO Auto-generated method stub
+		
 	}
 }
