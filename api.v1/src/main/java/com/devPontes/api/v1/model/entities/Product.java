@@ -47,7 +47,8 @@ public class Product implements Serializable {
 		this.id = id;
 		this.name = name;
 		this.price = price;
-		this.quantity = quantity;
+		if (quantity == null) throw new IllegalArgumentException("Quantidade do produto não pode ser nula");
+	    this.quantity = quantity;
 		this.hasInStock = hasInStock;
 		this.stock = stock;
 		this.sales = sales;
@@ -82,6 +83,9 @@ public class Product implements Serializable {
     }
 
     public Integer getQuantity() {
+        if (quantity == null) {
+            throw new IllegalStateException("Quantidade do produto não definida");
+        }
         return quantity;
     }
 

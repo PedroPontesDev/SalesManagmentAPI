@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "id", "moment", "sellerWhoSale", "ClientWhoBuy", "items", "priceTotal", "completed" })
@@ -17,7 +18,8 @@ public class SaleDTO implements Serializable {
 	private Long sellerWhoSaleId;
 	private Long ClientWhoBuyId;
 	private List<ProductDTO> items;
-	private Optional<Double> priceTotal;
+	@JsonProperty("priceTotal")
+	private Double priceTotal;
 	private Boolean completed;
 
 	public SaleDTO() {
@@ -32,7 +34,7 @@ public class SaleDTO implements Serializable {
 		this.sellerWhoSaleId = sellerWhoSale.getId();
 		this.ClientWhoBuyId = ClientWhoBuy.getId();
 		this.items = items;
-		this.priceTotal = Optional.of(totalValueOfSale);
+		this.priceTotal = totalValueOfSale;
 		this.completed = completed;
 	}
 
@@ -76,11 +78,27 @@ public class SaleDTO implements Serializable {
 		this.items = items;
 	}
 
-	public Optional<Double> getPriceTotal() {
+	public Long getSellerWhoSaleId() {
+		return sellerWhoSaleId;
+	}
+
+	public void setSellerWhoSaleId(Long sellerWhoSaleId) {
+		this.sellerWhoSaleId = sellerWhoSaleId;
+	}
+
+	public Long getClientWhoBuyId() {
+		return ClientWhoBuyId;
+	}
+
+	public void setClientWhoBuyId(Long clientWhoBuyId) {
+		ClientWhoBuyId = clientWhoBuyId;
+	}
+
+	public Double getPriceTotal() {
 		return priceTotal;
 	}
 
-	public void setPriceTotal(Optional<Double> priceTotal) {
+	public void setPriceTotal(Double priceTotal) {
 		this.priceTotal = priceTotal;
 	}
 
@@ -115,5 +133,4 @@ public class SaleDTO implements Serializable {
 				+ ClientWhoBuyId + ", items=" + items + ", priceTotal=" + priceTotal + ", completed=" + completed + "]";
 	}
 
-	
 }

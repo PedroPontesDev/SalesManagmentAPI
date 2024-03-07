@@ -80,11 +80,11 @@ public class Sale implements Serializable {
 	}
 
 	public Instant getMoment() {
-		return moment.now();
+		return Instant.now();
 	}
 
 	public void setMoment(Instant moment) {
-		this.moment = moment.now();
+		this.moment = Instant.now();
 	}
 
 	public Seller getSellerWhoSale() {
