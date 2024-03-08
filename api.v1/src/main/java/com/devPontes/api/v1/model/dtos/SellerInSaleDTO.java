@@ -9,35 +9,25 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
 
-public class SellerDTO extends RepresentationModel<SellerDTO> implements Serializable {
+public class SellerInSaleDTO extends RepresentationModel<SellerInSaleDTO> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String username;
-	private String password;
 	private String email;
 	private String fullName;
-	private double salary;
 
-	private Integer quantitySalesInMonth;
-
-	public SellerDTO(Long id, String username, String password, String email, String fullName, double salary,
-			Integer quantitySalesInMonth) {
+	public SellerInSaleDTO(Long id, String username, String email, String fullName) {
 		this.id = id;
 		this.username = username;
-		this.password = password;
 		this.email = email;
 		this.fullName = fullName;
-		this.salary = salary;
-		this.setQuantitySalesInMonth(quantitySalesInMonth);
 	}
 
-	public SellerDTO() {
+	public SellerInSaleDTO() {
 
 	}
 
-	
-	
 	public Long getId() {
 		return id;
 	}
@@ -52,14 +42,6 @@ public class SellerDTO extends RepresentationModel<SellerDTO> implements Seriali
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getEmail() {
@@ -78,27 +60,11 @@ public class SellerDTO extends RepresentationModel<SellerDTO> implements Seriali
 		this.fullName = fullName;
 	}
 
-	public double getSalary() {
-		return salary;
-	}
-
-	public void setSalary(double salary) {
-		this.salary = salary;
-	}
-
-	public Integer getQuantitySalesInMonth() {
-		return quantitySalesInMonth;
-	}
-
-	public void setQuantitySalesInMonth(Integer quantitySalesInMonth) {
-		this.quantitySalesInMonth = quantitySalesInMonth;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(id);
+		result = prime * result + Objects.hash(email, fullName, id, username);
 		return result;
 	}
 
@@ -110,14 +76,15 @@ public class SellerDTO extends RepresentationModel<SellerDTO> implements Seriali
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SellerDTO other = (SellerDTO) obj;
-		return Objects.equals(id, other.id);
+		SellerInSaleDTO other = (SellerInSaleDTO) obj;
+		return Objects.equals(email, other.email) && Objects.equals(fullName, other.fullName)
+				&& Objects.equals(id, other.id) && Objects.equals(username, other.username);
 	}
 
 	@Override
 	public String toString() {
-		return "SellerDTO [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
-				+ ", fullName=" + fullName + ", salary=" + salary + "]";
+		return "SellerInSaleDTO [id=" + id + ", username=" + username + ", email=" + email + ", fullName=" + fullName
+				+ "]";
 	}
 
 }

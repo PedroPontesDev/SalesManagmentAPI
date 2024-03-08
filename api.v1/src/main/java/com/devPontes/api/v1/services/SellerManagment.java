@@ -2,20 +2,20 @@ package com.devPontes.api.v1.services;
 
 import java.util.List;
 
-import com.devPontes.api.v1.model.dtos.SellerDTO;
+import com.devPontes.api.v1.model.dtos.SellerInSaleDTO;
 
 
 public interface SellerManagment {
 
-	SellerDTO findById(Long id) throws Exception;
+	SellerInSaleDTO findById(Long id) throws Exception;
 	
-	List<SellerDTO> findAll() throws Exception;
+	List<SellerInSaleDTO> findAll() throws Exception;
 
-	SellerDTO registerSeller(SellerDTO seller) throws Exception;
+	SellerInSaleDTO registerSeller(SellerInSaleDTO seller) throws Exception;
 
-	SellerDTO updateSeller(SellerDTO seller) throws Exception;
+	SellerInSaleDTO updateSeller(SellerInSaleDTO seller) throws Exception;
 
-	SellerDTO updateSellerSalary(Long id, Double newSalary) throws Exception;
+	SellerInSaleDTO updateSellerSalary(Long id, Double newSalary) throws Exception;
 	
 	void deleteSeller(Long id) throws Exception;	
 

@@ -7,37 +7,22 @@ import java.util.Objects;
 
 import com.devPontes.api.v1.model.entities.Client;
 import com.devPontes.api.v1.model.entities.Seller;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "id", "moment", "sellerWhoSale", "ClientWhoBuy", "items", "priceTotal", "completed" })
+@JsonPropertyOrder({ "id", "moment", "sellerInSale", "items", "priceTotal", "completed"})
 public class SaleDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private Instant moment;
-	private Seller sellerWhoSale;
-	private Client ClientWhoBuy;
-	@JsonIgnore
+	private SellerInSaleDTO sellerInSale;
 	private List<ProductDTO> items;
-	@JsonProperty("priceTotal")
 	private Double priceTotal;
 	private Boolean completed;
 
 	public SaleDTO() {
 
-	}
-
-	public SaleDTO(Long id, Instant moment, Seller sellerWhoSale, Client clientWhoBuy, List<ProductDTO> items,
-			Double priceTotal, Boolean completed) {
-		this.id = id;
-		this.moment = moment;
-		this.sellerWhoSale = sellerWhoSale;
-		ClientWhoBuy = clientWhoBuy;
-		this.items = items;
-		this.priceTotal = priceTotal;
-		this.completed = completed;
 	}
 
 	public Long getId() {
@@ -56,20 +41,13 @@ public class SaleDTO implements Serializable {
 		this.moment = moment;
 	}
 
-	public Seller getSellerWhoSale() {
-		return sellerWhoSale;
+	
+	public SellerInSaleDTO getSellerInSale() {
+		return sellerInSale;
 	}
 
-	public void setSellerWhoSale(Seller sellerWhoSale) {
-		this.sellerWhoSale = sellerWhoSale;
-	}
-
-	public Client getClientWhoBuy() {
-		return ClientWhoBuy;
-	}
-
-	public void setClientWhoBuy(Client clientWhoBuy) {
-		ClientWhoBuy = clientWhoBuy;
+	public void setSellerInSale(SellerInSaleDTO sellerInSale) {
+		this.sellerInSale = sellerInSale;
 	}
 
 	public List<ProductDTO> getItems() {

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devPontes.api.v1.model.dtos.SellerDTO;
+import com.devPontes.api.v1.model.dtos.SellerInSaleDTO;
 import com.devPontes.api.v1.services.impl.SellerServices;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,22 +32,22 @@ public class SellerController {
 
 	@Operation(tags = {"Seller"}, description = "Retrieve all sellers")
 	@GetMapping(path = "/find-all")
-	public ResponseEntity<List<SellerDTO>> findAll() {
-		List<SellerDTO> all = sellerServices.findAll();
+	public ResponseEntity<List<SellerInSaleDTO>> findAll() {
+		List<SellerInSaleDTO> all = sellerServices.findAll();
 		return new ResponseEntity<>(all, HttpStatus.OK);
 	}
 
 	@Operation(tags = {"Seller"}, summary = "Register one seller")
 	@PostMapping(path = "/register-seller", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SellerDTO> registerNewSeller(@RequestBody SellerDTO newSeller) throws Exception {
+	public ResponseEntity<SellerInSaleDTO> registerNewSeller(@RequestBody SellerInSaleDTO newSeller) throws Exception {
 		var seller = sellerServices.registerSeller(newSeller);
 		return new ResponseEntity<>(seller, HttpStatus.CREATED);
 	}
 	
 	@Operation(tags = {"Seller"}, summary = "Update a existent seller")
 	@PutMapping(path = "/update-seller")
-	public ResponseEntity<SellerDTO> updateExistentSeller(@RequestBody SellerDTO updatedSeller) throws Exception {
-		SellerDTO updated = sellerServices.updateSeller(updatedSeller);
+	public ResponseEntity<SellerInSaleDTO> updateExistentSeller(@RequestBody SellerInSaleDTO updatedSeller) throws Exception {
+		SellerInSaleDTO updated = sellerServices.updateSeller(updatedSeller);
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 	
@@ -60,8 +60,8 @@ public class SellerController {
 	
 	@Operation(tags = {"Seller"}, summary = "Update salary of one seller")
 	@PutMapping(path = "/update-seller-salary")
-	public ResponseEntity<SellerDTO> updateSalary(@RequestParam Long id, @RequestParam Double newSalary) throws Exception {
-	    SellerDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
+	public ResponseEntity<SellerInSaleDTO> updateSalary(@RequestParam Long id, @RequestParam Double newSalary) throws Exception {
+	    SellerInSaleDTO updatedSeller = sellerServices.updateSellerSalary(id, newSalary);
 	    return ResponseEntity.ok().body(updatedSeller);
 	}
 	

@@ -15,7 +15,7 @@ public interface SaleManagment {
 
 	SaleDTO updateSale(SaleDTO Sale) throws Exception;
 
-	void processSale(Sale sale, Stock stock) throws Exception;
+	Sale processSale(Sale sale, Stock stock) throws Exception;
 	
 	boolean updateStockLevels(Sale sale, Long stockId);
 	

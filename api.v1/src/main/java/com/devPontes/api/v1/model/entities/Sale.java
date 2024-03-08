@@ -41,7 +41,7 @@ public class Sale implements Serializable {
 	@JsonIgnore
 	private Client clientWhoBuy;
 
-	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "sale_product", joinColumns = @JoinColumn(name = "sale_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private List<Product> items = new ArrayList<>();
 

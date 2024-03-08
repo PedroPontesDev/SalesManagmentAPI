@@ -1,10 +1,8 @@
 package com.devPontes.api.v1.services;
 
 import java.util.List;
-import java.util.Set;
 
 import com.devPontes.api.v1.model.dtos.ProductDTO;
-import com.devPontes.api.v1.model.dtos.SellerDTO;
 
 public interface ProductManagment {
 

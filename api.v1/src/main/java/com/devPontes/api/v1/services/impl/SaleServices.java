@@ -44,106 +44,123 @@ public class SaleServices implements SaleManagment {
 
     @Override
     public SaleDTO registerNewSale(SaleDTO newSale, Long clientId, Long sellerId, Long stockId) throws Exception {
-      Sale sale = mapperEntities(newSale, clientId, sellerId, stockId);  // Processe a venda somente se ela não estiver marcada como concluída
-      if (!sale.isCompleted()) {
-        processSale(sale, stockRepositories.findById(stockId).get());
-      }
-      return MyMapper.parseObject(sale, SaleDTO.class);
-    }
+        Sale sale = MyMapper.parseObject(newSale, Sale.class);
+        if (sale == null)
+            throw new Exception("Erro ao mapear SaleDTO para entidade Sale");
 
-    private Sale mapperEntities(SaleDTO newSale, Long clientId, Long sellerId, Long stockId) throws Exception {
         Optional<Client> existentCli = clientRepositories.findById(clientId);
         Optional<Seller> existentSeller = sellerRepositories.findById(sellerId);
         Optional<Stock> existentStock = stockRepositories.findById(stockId);
-        if (existentCli.isPresent() && existentSeller.isPresent() && existentStock.isPresent()) {
-            Sale sale = MyMapper.parseObject(newSale, Sale.class);
-            sale.setClientWhoBuy(existentCli.get());
-            sale.setSellerWhoSale(existentSeller.get());
-            processSale(sale, existentStock.get());
-            return sale;
+
+        if (!existentCli.isPresent()) {
+            logger.warn("Cliente com ID {} não encontrado. Atribuindo `null` ao campo `clientWhoBuy` da venda.",
+                    clientId);
+            throw new Exception("Cliente com ID " + clientId + " não encontrado.");
         }
-        throw new Exception("Cliente, vendedor ou estoque não encontrado!");
+
+        if (!existentSeller.isPresent()) {
+            logger.warn("Vendedor com ID {} não encontrado. Atribuindo `null` ao campo `sellerWhoSale` da venda.",
+                    sellerId);
+            throw new Exception("Vendedor com ID " + sellerId + " não encontrado.");
+        }
+
+        if (!existentStock.isPresent()) {
+            throw new Exception("Estoque com ID " + stockId + " não encontrado.");
+        }
+
+        Sale processed = processSale(sale, existentStock.get());
+
+        if (processed.isCompleted()) {
+            return MyMapper.parseObject(processed, SaleDTO.class);
+        } else {
+            throw new Exception("Venda não pode ser processada ou registrada!");
+        }
     }
 
-    @Override
-    @Transactional
-    public void processSale(Sale sale, Stock stock) throws Exception {
+    public Sale processSale(Sale sale, Stock stock) throws Exception {
+        boolean isComplete = false;
         sale.setMoment(Instant.now());
         Set<Long> productIdsInSale = sale.getItems().stream().map(Product::getId).collect(Collectors.toSet());
-        Set<Long> productIdsInStock = stock.getProductsInStock().stream().map(Product::getId).collect(Collectors.toSet());
+        Set<Long> productIdsInStock = stock.getProductsInStock().stream().map(Product::getId)
+                .collect(Collectors.toSet());
 
         if (productIdsInStock.containsAll(productIdsInSale)) {
             for (Product saleProduct : sale.getItems()) {
                 Product stockProduct = stock.getProductsInStock().stream()
-                        .filter(product -> product.getId().equals(saleProduct.getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new Exception("Produto não encontrado no estoque: " + saleProduct.getName()));
+                        .filter(product -> product.getId() == (saleProduct.getId())).findFirst().orElseThrow(
+                                () -> new Exception("Produto não encontrado no estoque: " + saleProduct.getName()));
+
                 int remainingQuantity = stockProduct.getQuantity() - saleProduct.getQuantity();
                 if (remainingQuantity < 0) {
-                    throw new Exception("Quantidade insuficiente do produto no estoque: " + stockProduct.getName());
+                    throw new Exception(
+                            "Quantidade insuficiente do produto no estoque: " + stockProduct.getName());
                 }
-                stockProduct.setQuantity(remainingQuantity);              
+
+                stockProduct.setQuantity(remainingQuantity);
+                sale.setTotalValueOfsale(
+                        sale.getItems().stream().mapToDouble(Product::getPrice).sum());
+                isComplete = true;
+                sale.setCompleted(isComplete);
+                saleRepositories.save(sale);
+                stockRepositories.save(stock);
             }
-            sale.setTotalValueOfsale(sale.getItems().stream().mapToDouble(Product::getPrice).sum());
-            stockRepositories.save(stock);       
-            saleRepositories.save(sale);
-            logger.info("Venda processada com sucesso!");
-        } else {
-            throw new Exception("Itens da venda não estão disponíveis no estoque!");
-        }     
+        }
+        return sale;
     }
 
-    @Override
-    public SaleDTO findSaleDetails(Long id) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public SaleDTO findSaleDetails(Long id) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public SaleDTO updateSale(SaleDTO Sale) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public SaleDTO updateSale(SaleDTO Sale) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public void verifyItensAndSetValue(Sale sale) throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Set<SaleDTO> findAllSales() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<SaleDTO> findWhoMounthHaveMoreSale(SaleDTO sale, LocalDate now, LocalDate datesOfSale) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<SaleDTO> findSalesByDate(SaleDTO sale, LocalDate be, LocalDate tween) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void deleteExistentSale(Long id) throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void addFrequencyOfSellerOfSales(Long saleId, Long sellerId) {
-        // TODO Auto-generated method stub
-
-    }
-    
 	@Override
 	public boolean updateStockLevels(Sale sale, Long stockId) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public void verifyItensAndSetValue(Sale sale) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Set<SaleDTO> findAllSales() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<SaleDTO> findWhoMounthHaveMoreSale(SaleDTO sale, LocalDate now, LocalDate datesOfSale) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<SaleDTO> findSalesByDate(SaleDTO sale, LocalDate be, LocalDate tween) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteExistentSale(Long id) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addFrequencyOfSellerOfSales(Long saleId, Long sellerId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+    // Métodos restantes omitidos por brevidade
 }

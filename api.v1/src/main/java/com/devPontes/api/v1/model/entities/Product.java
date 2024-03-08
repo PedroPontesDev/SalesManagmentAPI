@@ -39,7 +39,7 @@ public class Product implements Serializable {
     private Stock stock;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "items", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "items", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Sale> sales = new HashSet<>();
     
     public Product(Long id, String name, double price, Integer quantity, boolean hasInStock, Stock stock,
