@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +21,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "tb_sales")
@@ -33,9 +34,11 @@ public class Sale implements Serializable {
 	private Instant moment;
 
 	@ManyToOne
+	@JsonIgnore
 	private Seller sellerWhoSale;
 
 	@OneToOne
+	@JsonIgnore
 	private Client clientWhoBuy;
 
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
@@ -140,9 +143,6 @@ public class Sale implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Sale [id=" + id + ", moment=" + moment + ", sellerWhoSale=" + sellerWhoSale + ", clientWhoBuy="
-				+ clientWhoBuy + ", items=" + items + ", totalValueOfsale=" + totalValueOfsale + ", completed="
-				+ completed + "]";
+	    return "Sale [id=" + id + ", moment=" + moment + ", sellerWhoSaleId=" + sellerWhoSale.getId() + ", clientWhoBuyId=" + clientWhoBuy.getId() + ", totalValueOfsale=" + totalValueOfsale + ", completed=" + completed + "]";
 	}
-
 }

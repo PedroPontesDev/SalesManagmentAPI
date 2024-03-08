@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
+import com.devPontes.api.v1.model.entities.Client;
+import com.devPontes.api.v1.model.entities.Seller;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -15,8 +17,9 @@ public class SaleDTO implements Serializable {
 
 	private Long id;
 	private Instant moment;
-	private Long sellerWhoSaleId;
-	private Long ClientWhoBuyId;
+	private Seller sellerWhoSale;
+	private Client ClientWhoBuy;
+	@JsonIgnore
 	private List<ProductDTO> items;
 	@JsonProperty("priceTotal")
 	private Double priceTotal;
@@ -26,15 +29,14 @@ public class SaleDTO implements Serializable {
 
 	}
 
-	// Construtor que aceita uma string no formato da data/hora
-	public SaleDTO(Long id, String moment, SellerDTO sellerWhoSale, ClientDTO ClientWhoBuy, List<ProductDTO> items,
-			Double totalValueOfSale, Boolean completed) {
+	public SaleDTO(Long id, Instant moment, Seller sellerWhoSale, Client clientWhoBuy, List<ProductDTO> items,
+			Double priceTotal, Boolean completed) {
 		this.id = id;
-		this.moment = Instant.parse(moment);
-		this.sellerWhoSaleId = sellerWhoSale.getId();
-		this.ClientWhoBuyId = ClientWhoBuy.getId();
+		this.moment = moment;
+		this.sellerWhoSale = sellerWhoSale;
+		ClientWhoBuy = clientWhoBuy;
 		this.items = items;
-		this.priceTotal = totalValueOfSale;
+		this.priceTotal = priceTotal;
 		this.completed = completed;
 	}
 
@@ -54,20 +56,20 @@ public class SaleDTO implements Serializable {
 		this.moment = moment;
 	}
 
-	public Long getSellerWhoSale() {
-		return this.sellerWhoSaleId;
+	public Seller getSellerWhoSale() {
+		return sellerWhoSale;
 	}
 
-	public void setSellerWhoSale(Long sellerWhoSaleId) {
-		this.sellerWhoSaleId = sellerWhoSaleId;
+	public void setSellerWhoSale(Seller sellerWhoSale) {
+		this.sellerWhoSale = sellerWhoSale;
 	}
 
-	public Long getClientWhoBuy() {
-		return ClientWhoBuyId;
+	public Client getClientWhoBuy() {
+		return ClientWhoBuy;
 	}
 
-	public void setClientWhoBuy(Long clientWhoBuyId) {
-		this.ClientWhoBuyId = clientWhoBuyId;
+	public void setClientWhoBuy(Client clientWhoBuy) {
+		ClientWhoBuy = clientWhoBuy;
 	}
 
 	public List<ProductDTO> getItems() {
@@ -76,22 +78,6 @@ public class SaleDTO implements Serializable {
 
 	public void setItems(List<ProductDTO> items) {
 		this.items = items;
-	}
-
-	public Long getSellerWhoSaleId() {
-		return sellerWhoSaleId;
-	}
-
-	public void setSellerWhoSaleId(Long sellerWhoSaleId) {
-		this.sellerWhoSaleId = sellerWhoSaleId;
-	}
-
-	public Long getClientWhoBuyId() {
-		return ClientWhoBuyId;
-	}
-
-	public void setClientWhoBuyId(Long clientWhoBuyId) {
-		ClientWhoBuyId = clientWhoBuyId;
 	}
 
 	public Double getPriceTotal() {
@@ -129,8 +115,11 @@ public class SaleDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "SaleDTO [id=" + id + ", moment=" + moment + ", sellerWhoSaleId=" + sellerWhoSaleId + ", ClientWhoBuyId="
-				+ ClientWhoBuyId + ", items=" + items + ", priceTotal=" + priceTotal + ", completed=" + completed + "]";
+		return "SaleDTO [id=" + id + ", moment=" + moment + ", items=" + items + ", priceTotal=" + priceTotal
+				+ ", completed=" + completed + "]";
 	}
+
+
+	
 
 }

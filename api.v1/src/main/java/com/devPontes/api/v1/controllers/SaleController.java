@@ -29,19 +29,15 @@ public class SaleController {
 	@Operation(tags = {"Sale"}, description = "Retrieve One Sale")
 	@GetMapping(path = "/sale-details/{saleId}")
 	public ResponseEntity<SaleDTO> showSaleDetails(@PathVariable Long saleId) throws Exception {
-	    SaleDTO sale = saleServices.findOneSaleById(saleId);
+	    SaleDTO sale = saleServices.findSaleDetails(saleId);
 	    if(sale != null) return new ResponseEntity<>(sale, HttpStatus.OK);
 	    else {return ResponseEntity.badRequest().build();}
 	}
 
-	@Operation(tags = {"Sale"}, description = "Register a new Sale")
-	@PostMapping(path = "/register-sale")
-	public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, 
-													@RequestParam Long stockId, 
-													@RequestParam Long sellerId, 
-													@RequestParam Long clientId)throws Exception {
-	    var sale = saleServices.registerNewSale(newSale, stockId, sellerId,clientId);
-	    var saleDTO = MyMapper.parseObject(sale, SaleDTO.class); // ou algum outro método que transforma Sale em SaleDTO
-	    return new ResponseEntity<>(saleDTO, HttpStatus.CREATED);
+	 @Operation(tags = {"Sale"}, description = "Register a new Sale")
+	  @PostMapping("/register-sale/{clientId}/{sellerId}/s/{stockId}")
+	    public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @PathVariable Long clientId, @PathVariable Long sellerId, @PathVariable Long stockId) throws Exception {
+	            SaleDTO registeredSale = saleServices.registerNewSale(newSale, clientId, sellerId, stockId);
+	            return new ResponseEntity<>(registeredSale, HttpStatus.CREATED);
+	    }
 	}
-}

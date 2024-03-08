@@ -92,10 +92,10 @@ public class Client implements Serializable{
 		Client other = (Client) obj;
 		return Objects.equals(id, other.id);
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Client [id=" + id + ", fullName=" + fullName + ", cpf=" + cpf + ", sale=" + sale + "]";
+	    return "Client [id=" + id + ", fullName=" + fullName + ", cpf=" + cpf + ", saleId=" + (sale != null ? sale.getId() : null) + "]";
 	}
 	
 	
