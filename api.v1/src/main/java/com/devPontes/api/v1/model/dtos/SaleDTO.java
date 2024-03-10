@@ -5,18 +5,28 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import com.devPontes.api.v1.model.entities.Client;
-import com.devPontes.api.v1.model.entities.Seller;
+import org.springframework.hateoas.RepresentationModel;
+
+import com.devPontes.api.v1.model.entities.Sale;
+import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "id", "moment", "sellerInSale", "items", "priceTotal", "completed"})
-public class SaleDTO implements Serializable {
+public class SaleDTO extends RepresentationModel<SellerInSaleDTO> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private Instant moment;
+	
+	@JsonProperty(access = Access.READ_ONLY)
+	private SellerDTO sellerEntity;
+	
+	
 	private SellerInSaleDTO sellerInSale;
+	
+	
 	private List<ProductDTO> items;
 	private Double priceTotal;
 	private Boolean completed;
@@ -42,8 +52,11 @@ public class SaleDTO implements Serializable {
 	}
 
 	
-	public SellerInSaleDTO getSellerInSale() {
-		return sellerInSale;
+	public Long getSellerInSale() {
+		Long mappedDTOid = this.sellerEntity.getId();
+		this.sellerInSale.setId(mappedDTOid);
+		Long dbSeller = this.sellerInSale.getId();
+		return dbSeller;
 	}
 
 	public void setSellerInSale(SellerInSaleDTO sellerInSale) {
@@ -73,6 +86,7 @@ public class SaleDTO implements Serializable {
 	public void setCompleted(Boolean completed) {
 		this.completed = completed;
 	}
+	
 
 	@Override
 	public int hashCode() {

@@ -6,9 +6,8 @@ import java.util.Objects;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import lombok.Data;
-
+	
+@JsonPropertyOrder({"id", "username", "email", "fullNme"})
 public class SellerInSaleDTO extends RepresentationModel<SellerInSaleDTO> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
