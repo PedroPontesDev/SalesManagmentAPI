@@ -23,9 +23,7 @@ public class SaleDTO extends RepresentationModel<SellerInSaleDTO> implements Ser
 	@JsonProperty(access = Access.READ_ONLY)
 	private SellerDTO sellerEntity;
 	
-	
 	private SellerInSaleDTO sellerInSale;
-	
 	
 	private List<ProductDTO> items;
 	private Double priceTotal;

@@ -37,7 +37,7 @@ public class SaleController {
 	 @Operation(tags = {"Sale"}, description = "Register a new Sale")
 	  @PostMapping("/register-sale/{clientId}/{sellerId}/s/{stockId}")
 	    public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @PathVariable Long clientId, @PathVariable Long sellerId, @PathVariable Long stockId) throws Exception {
-	            SaleDTO registeredSale = saleServices.registerNewSale(newSale, clientId, sellerId, stockId);
+	            var registeredSale = saleServices.registerNewSale(newSale, clientId, sellerId, stockId);
 	            return new ResponseEntity<>(registeredSale, HttpStatus.CREATED);
 	    }
 	}

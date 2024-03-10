@@ -30,45 +30,70 @@ public class SellerDTO extends RepresentationModel<SellerInSaleDTO> implements S
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+	public SellerInSaleDTO toSellerInSaleDTO() {
+		SellerInSaleDTO sellerInSaleDTO = new SellerInSaleDTO();
+		sellerInSaleDTO.setId(this.getId());
+		sellerInSaleDTO.setUsername(this.getUsername());
+		sellerInSaleDTO.setEmail(this.getEmail());
+		sellerInSaleDTO.setFullName(this.getFullName());
+		return sellerInSaleDTO;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getFullName() {
 		return fullName;
 	}
+
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
+
 	public double getSalary() {
 		return salary;
 	}
+
 	public void setSalary(double salary) {
 		this.salary = salary;
 	}
+
 	public Integer getQuantitySales() {
 		return quantitySales;
 	}
+
 	public void setQuantitySales(Integer quantitySales) {
 		this.quantitySales = quantitySales;
 	}
+
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -76,6 +101,7 @@ public class SellerDTO extends RepresentationModel<SellerInSaleDTO> implements S
 		result = prime * result + Objects.hash(email, fullName, id, password, quantitySales, salary, username);
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -91,13 +117,11 @@ public class SellerDTO extends RepresentationModel<SellerInSaleDTO> implements S
 				&& Double.doubleToLongBits(salary) == Double.doubleToLongBits(other.salary)
 				&& Objects.equals(username, other.username);
 	}
+
 	@Override
 	public String toString() {
 		return "SellerDTO [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
 				+ ", fullName=" + fullName + ", salary=" + salary + ", quantitySales=" + quantitySales + "]";
 	}
 
-	
-
-	
 }

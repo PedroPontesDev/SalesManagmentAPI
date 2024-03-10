@@ -1,19 +1,20 @@
 package com.devPontes.api.v1.services;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import com.devPontes.api.v1.model.dtos.SaleDTO;
-import com.devPontes.api.v1.model.entities.Client;
 import com.devPontes.api.v1.model.entities.Sale;
 import com.devPontes.api.v1.model.entities.Seller;
-import com.devPontes.api.v1.model.entities.Stock;
 
 public interface SaleManagment {
 
 	SaleDTO registerNewSale(SaleDTO newSale, Long clientId, Long sellerId, Long stockId) throws Exception;
 
-	Sale processSale(Sale sale, Stock stock, Client buyer, Seller seller) throws Exception;
+	boolean verifyIfHasProductsToSale(List<Long> saleItems, List<Long> inDbItems);
+	
+	void updateStockLevels(Sale sale, Long stockId);
 	
 	SaleDTO findSaleDetails(Long id) throws Exception;
 
@@ -25,15 +26,13 @@ public interface SaleManagment {
 
 	Set<SaleDTO> findSalesByDate(SaleDTO sale, LocalDate be, LocalDate tween);
 
-	void updateStockLevels(Sale sale, Long stockId);
-
+	SaleDTO processSale(SaleDTO newSale, Long sellerId, Long stockId) throws Exception;
+	
 	void deleteExistentSale(Long id) throws Exception;
 
 	void addFrequencyOfSellerOfSales(Long saleId, Long sellerId);
+
 	
-	void verifyItensInSaleAndSetValue(Sale sale) throws Exception;
-
-
 
 
 }
