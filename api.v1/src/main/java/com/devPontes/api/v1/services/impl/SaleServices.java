@@ -2,17 +2,19 @@ package com.devPontes.api.v1.services.impl;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.devPontes.api.v1.model.dtos.SaleDTO;
-import com.devPontes.api.v1.model.dtos.SellerDTO;
 import com.devPontes.api.v1.model.dtos.SellerInSaleDTO;
 import com.devPontes.api.v1.model.entities.Client;
+import com.devPontes.api.v1.model.entities.Product;
 import com.devPontes.api.v1.model.entities.Sale;
 import com.devPontes.api.v1.model.entities.Seller;
 import com.devPontes.api.v1.model.entities.Stock;
@@ -27,7 +29,7 @@ import com.devPontes.api.v1.services.SaleManagment;
 import jakarta.transaction.Transactional;
 
 @Service
-public class SaleServices implements SaleManagment {
+public class SaleServices implements SaleManagment{
 
     @Autowired
     private ProductRepositories prodRepo;
@@ -44,44 +46,45 @@ public class SaleServices implements SaleManagment {
     @Autowired
     private SellerRepositories sellerRepo;
 
-    @Override
+    @Transactional
     public SaleDTO registerNewSale(SaleDTO newSale, Long clientId, Long sellerId, Long stockId) throws Exception {
         Optional<Client> clientExistOptional = clientRepo.findById(clientId);
         Optional<Stock> stockExistOptional = stockRepo.findById(stockId);
-        Optional<Seller> sellerExistOptional = sellerRepo.findById(sellerId); // Corrigido para usar sellerId
+        Optional<Seller> sellerExistOptional = sellerRepo.findById(sellerId);
+
         if (clientExistOptional.isPresent() && stockExistOptional.isPresent() && sellerExistOptional.isPresent()) {
             Sale sale = MyMapper.parseObject(newSale, Sale.class);
             sale.setClientWhoBuy(clientExistOptional.get());
             sale.setMoment(Instant.now());
+            
+            // Verificando se os produtos estão disponíveis no estoque
+            List<Long> productIds = newSale.getItems().stream().map(item -> item.getId()).collect(Collectors.toList());
+            List<Product> products = prodRepo.findAllById(productIds);
+            Stock stock = stockExistOptional.get();
+            boolean hasAllProductsInStock = products.stream().allMatch(product -> stock.getProductsInStock().contains(product));
 
-            // Convertendo para DTO interno para uso interno no sistema
-            SellerInSaleDTO sellerInternalDTO = new SellerInSaleDTO(
-                sellerExistOptional.get().getId(),
-                sellerExistOptional.get().getUsername(),
-                sellerExistOptional.get().getEmail(),
-                sellerExistOptional.get().getFullName()
-            );
-            sale.setSellerWhoSale(MyMapper.parseObject(sellerInternalDTO, Seller.class));
-
-            SaleDTO processed = processSale(newSale, sellerId, stockId);
-            return processed;
+            if (hasAllProductsInStock) {
+                sale.setItems(new ArrayList<>(products));
+                // Chamando o método processSale para finalizar as operações lógicas
+                SaleDTO processedSale = processSale(sale, sellerId, stockId);
+                return processedSale;
+            } else {
+                throw new Exception("Um ou mais produtos não estão disponíveis no estoque.");
+            }
         } else {
             throw new Exception("Não foi possível registrar a venda devido a dados ausentes.");
         }
     }
 
-    @Override
     @Transactional
-    public SaleDTO processSale(SaleDTO newSale, Long sellerId, Long stockId) throws Exception {
+    public SaleDTO processSale(Sale sale, Long sellerId, Long stockId) throws Exception {
         Optional<Seller> sellerExistOptional = sellerRepo.findById(sellerId);
         if (sellerExistOptional.isPresent()) {
-            Double total = newSale.getItems().stream().mapToDouble(p -> p.getQuantity() * p.getPrice()).sum(); // Utiliza o total fornecido pelo cliente
-            Sale sale = MyMapper.parseObject(newSale, Sale.class);
+            Double total = sale.getItems().stream().mapToDouble(p -> p.getQuantity() * p.getPrice()).sum();
             sale.setTotalValueOfsale(total);
 
             Seller seller = sellerExistOptional.get();
-            
-            // Convertendo para DTO interno para uso interno no sistema
+
             SellerInSaleDTO sellerInternalDTO = new SellerInSaleDTO(
                 seller.getId(),
                 seller.getUsername(),
@@ -91,15 +94,6 @@ public class SaleServices implements SaleManagment {
             sale.setSellerWhoSale(MyMapper.parseObject(sellerInternalDTO, Seller.class));
 
             salesRepo.save(sale);
-            
-            // Convertendo para DTO do usuário para fornecer informações detalhadas ao cliente
-            SellerDTO sellerUserDTO = new SellerDTO();
-            sellerUserDTO.setId(seller.getId());
-            sellerUserDTO.setUsername(seller.getUsername());
-            sellerUserDTO.setEmail(seller.getEmail());
-            sellerUserDTO.setFullName(seller.getFullName());
-            sellerUserDTO.setSalary(seller.getSalary());
-            sellerUserDTO.setQuantitySales(seller.getQuantitySales());
 
             return MyMapper.parseObject(sale, SaleDTO.class);
         } else {
@@ -121,14 +115,9 @@ public class SaleServices implements SaleManagment {
 
 	@Override
 	public SaleDTO findSaleDetails(Long id) throws Exception {
-        Optional<Sale> saleOptional = salesRepo.findById(id);
-        if (saleOptional.isPresent()) {
-            Sale sale = saleOptional.get();
-            return MyMapper.parseObject(sale, SaleDTO.class);
-        } else {
-            throw new Exception("Venda não encontrada.");
-        }
-    }
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public SaleDTO updateSale(SaleDTO Sale) throws Exception {
@@ -155,6 +144,12 @@ public class SaleServices implements SaleManagment {
 	}
 
 	@Override
+	public SaleDTO processSale(SaleDTO newSale, Long sellerId, Long stockId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public void deleteExistentSale(Long id) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -165,6 +160,4 @@ public class SaleServices implements SaleManagment {
 		// TODO Auto-generated method stub
 		
 	}
-
-    // Métodos não implementados omitidos para brevidade
 }

@@ -76,6 +76,8 @@ public class ProductServices implements ProductManagment {
 		if (newProduct != null && stock.isPresent() && !stock.get().isStockFull()) {
 			Stock entity = stock.get();
 			Product prod = MyMapper.parseObject(newProduct, Product.class);
+			prod.setStock(entity);
+			prod.setHasInStock(true);
 			entity.getProductsInStock().add(prod);
 			stockRepositories.save(entity);
 			productRepositories.save(prod);
