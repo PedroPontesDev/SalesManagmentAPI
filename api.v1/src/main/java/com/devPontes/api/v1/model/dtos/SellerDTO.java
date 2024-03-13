@@ -27,6 +27,28 @@ public class SellerDTO extends RepresentationModel<SellerInSaleDTO> implements S
 	private double salary;
 	private Integer quantitySales;
 
+	
+	public SellerDTO(Long id, String username, String password, String email, String fullName, double salary,
+			Integer quantitySales) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.fullName = fullName;
+		this.salary = salary;
+		this.quantitySales = quantitySales;
+	}
+	
+	public SellerDTO(Long id, String email, String fullName) {
+		this.id = id;
+		this.fullName = fullName;
+		this.email = email;
+	}
+	
+	public SellerDTO() {
+		
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -35,15 +57,6 @@ public class SellerDTO extends RepresentationModel<SellerInSaleDTO> implements S
 		this.id = id;
 	}
 
-	public SellerInSaleDTO toSellerInSaleDTO() {
-		SellerInSaleDTO sellerInSaleDTO = new SellerInSaleDTO();
-		sellerInSaleDTO.setId(this.getId());
-		sellerInSaleDTO.setUsername(this.getUsername());
-		sellerInSaleDTO.setEmail(this.getEmail());
-		sellerInSaleDTO.setFullName(this.getFullName());
-		return sellerInSaleDTO;
-	}
-	
 	public String getUsername() {
 		return username;
 	}

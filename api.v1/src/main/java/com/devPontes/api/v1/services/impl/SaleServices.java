@@ -45,8 +45,8 @@ public class SaleServices implements SaleManagment{
 
     @Autowired
     private SellerRepositories sellerRepo;
-
-    @Transactional
+    
+    @Transactional(rollbackOn = Exception.class)
     public SaleDTO registerNewSale(SaleDTO newSale, Long clientId, Long sellerId, Long stockId) throws Exception {
         Optional<Client> clientExistOptional = clientRepo.findById(clientId);
         Optional<Stock> stockExistOptional = stockRepo.findById(stockId);
@@ -76,7 +76,7 @@ public class SaleServices implements SaleManagment{
         }
     }
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public SaleDTO processSale(Sale sale, Long sellerId, Long stockId) throws Exception {
         Optional<Seller> sellerExistOptional = sellerRepo.findById(sellerId);
         if (sellerExistOptional.isPresent()) {

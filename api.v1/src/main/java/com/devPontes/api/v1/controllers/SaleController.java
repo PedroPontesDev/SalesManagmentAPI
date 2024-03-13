@@ -34,10 +34,17 @@ public class SaleController {
 	    else {return ResponseEntity.badRequest().build();}
 	}
 
-	 @Operation(tags = {"Sale"}, description = "Register a new Sale")
 	  @PostMapping("/register-sale/{clientId}/{sellerId}/s/{stockId}")
-	    public ResponseEntity<SaleDTO> registerNewSale(@RequestBody SaleDTO newSale, @PathVariable Long clientId, @PathVariable Long sellerId, @PathVariable Long stockId) throws Exception {
-	            var registeredSale = saleServices.registerNewSale(newSale, clientId, sellerId, stockId);
-	            return new ResponseEntity<>(registeredSale, HttpStatus.CREATED);
+	    public ResponseEntity<SaleDTO> registerNewSale(
+	            @RequestBody SaleDTO saleRequest,
+	            @PathVariable Long clientId,
+	            @PathVariable Long sellerId,
+	            @PathVariable Long stockId) {
+	        try {
+	            SaleDTO registeredSale = saleServices.registerNewSale(saleRequest, clientId, sellerId, stockId);
+	            return ResponseEntity.status(HttpStatus.CREATED).body(registeredSale);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	        }
 	    }
 	}
