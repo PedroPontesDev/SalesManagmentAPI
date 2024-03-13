@@ -9,6 +9,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import com.devPontes.api.v1.model.entities.Seller;
 import com.devPontes.api.v1.model.mapper.MyMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "id", "moment", "sellerInSale", "items", "priceTotal", "completed" })
@@ -16,9 +17,16 @@ public class SaleDTO extends RepresentationModel<SellerInSaleDTO> implements Ser
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	
+	@JsonProperty(required = false)
 	private Instant moment;
+	
+	@JsonProperty(required = true)
 	private List<ProductDTO> items;
+	
+	@JsonProperty(required = false)
 	private Double priceTotal;
+	
 	private Boolean completed;
 
 	private SellerDTO sellerInSale;
@@ -69,9 +77,7 @@ public class SaleDTO extends RepresentationModel<SellerInSaleDTO> implements Ser
 	      mapped.setFullName(seller.getFullName());
 	      mapped.setEmail(seller.getEmail());
 	      mapped.setUsername(seller.getUsername());
-	     
 	      var dto = MyMapper.parseObject(mapped, SellerDTO.class);
-	      
 	      if(dto != null) return dto;
 	      throw new Exception("Algodeu errraodo");
 	    	

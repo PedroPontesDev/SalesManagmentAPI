@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devPontes.api.v1.model.dtos.ProductDTO;
 import com.devPontes.api.v1.model.dtos.SaleDTO;
 import com.devPontes.api.v1.model.mapper.MyMapper;
 import com.devPontes.api.v1.services.impl.SaleServices;
@@ -36,15 +37,11 @@ public class SaleController {
 
 	  @PostMapping("/register-sale/{clientId}/{sellerId}/s/{stockId}")
 	    public ResponseEntity<SaleDTO> registerNewSale(
-	            @RequestBody SaleDTO saleRequest,
+	            @RequestBody ProductDTO saleRequest,
 	            @PathVariable Long clientId,
 	            @PathVariable Long sellerId,
-	            @PathVariable Long stockId) {
-	        try {
+	            @PathVariable Long stockId) throws Exception {
 	            SaleDTO registeredSale = saleServices.registerNewSale(saleRequest, clientId, sellerId, stockId);
 	            return ResponseEntity.status(HttpStatus.CREATED).body(registeredSale);
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	        }
 	    }
-	}
