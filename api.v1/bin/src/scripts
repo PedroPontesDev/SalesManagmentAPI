@@ -1,0 +1,18 @@
+  var existentStock = stockRepositories.findById(stockId);
+       
+            if (existentStock.isPresent()) {  //Transacoes de estoque
+                Stock stock = existentStock.get();
+                var itemsStock = stock.getProductsInStock();
+                for (Product itemSale : itemsSale) {
+                	itemSale.setStock(stock);
+                    Product stockItem = itemsStock.stream()
+                            .filter(item -> item.getId() == (itemSale.getId()))
+                            .findFirst()
+                            .orElseThrow(() -> new Exception("Produto " + itemSale.getName() + " não encontrado no estoque"));
+
+                    int remainingQuantity = stockItem.getQuantity() - itemSale.getQuantity();
+                    if (remainingQuantity >= 0) {
+                        stockItem.setQuantity(remainingQuantity);
+                    } else {
+                        throw new Exception("Quantidade insuficiente do produto " + stockItem.getName() + " no estoque");
+                    }

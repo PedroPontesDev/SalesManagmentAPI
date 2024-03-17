@@ -1,0 +1,64 @@
+  		Sale sale = MyMapper.parseObject(newSale, Sale.class);
+
+		// 1. Verificar se o objeto Sale não é nulo
+	    if (sale == null) {
+	        logger.error("A venda não pode ser nula!");
+	        throw new Exception("A venda não pode ser nula!");
+	    }
+
+	    // 2. Obter os itens da venda
+	    List<Product> products = sale.getItems();
+	
+	    // 3. Verificar se a lista de produtos não é nula e não está vazia
+	    if (products == null || products.isEmpty()) {
+	        logger.error("A venda não possui itens!");
+	        throw new Exception("A venda não possui itens!");
+	    }
+	    
+	    // 5. Definir o momento da venda
+	    sale.setMoment(Instant.now());
+
+	    // 6. Carregar o estoque e o vendedor
+	    Stock stock = stockRepositories.findById(stockId).orElseThrow(() -> new Exception("Estoque não encontrado!"));
+	    Seller seller = sellerRepositories.findById(sellerId).orElseThrow(() -> new Exception("Vendedor não encontrado!"));
+
+	    // 7. Verificar se os produtos estão disponíveis no estoque
+	    List<Long> ids = products.stream().map(Product::getId).collect(Collectors.toList());
+	    List<Product> productsInStock = stock.getProductsInStock();
+	    List<Product> productsFind = productsInStock.stream().filter(product -> ids.contains(product.getId())).collect(Collectors.toList());
+
+	    // 8. Se os produtos não estiverem disponíveis, lançar uma exceção
+	    if (productsFind.size() != ids.size()) {
+	        logger.error("Alguns itens da venda não estão disponíveis no estoque!");
+	        throw new Exception("Alguns itens da venda não estão disponíveis no estoque!");
+	    }
+
+	    // 9. Atualizar a venda com os produtos encontrados
+	    sale.setItems(productsFind);
+
+	    // 10. Verificar se há quantidade suficiente de cada produto no estoque
+	    for (Product product : productsFind) {
+	        int quantityInSale = sale.getItems().stream().filter(item -> item.getId().equals(product.getId()))
+	                .mapToInt(Product::getQuantity).sum();
+	        if (product.getQuantity() < quantityInSale) {
+	            logger.error("Quantidade insuficiente do produto '{}' no estoque. Quantidade solicitada: {}, Quantidade disponível: {}",
+	                    product.getName(), quantityInSale, product.getQuantity());
+	            throw new Exception("Quantidade insuficiente do produto no estoque. Quantidade solicitada: " + quantityInSale);
+	        }
+	    }
+
+	    // 11. Carregar o cliente
+	    Client client = clientsRepo.findById(clientId).orElseThrow(() -> new Exception("Cliente não encontrado!"));
+
+	    // 12. Associar o cliente e o vendedor à venda
+	    sale.setClientWhoBuy(client);
+	    sale.setSellerWhoSale(seller);
+
+	    // 13. Registrar a venda no banco de dados
+	    sale.setCompleted(true);
+	    Long newCapacityAfterSale = stock.getCurrentCapacity() - sale.getItems().stream().mapToInt(Product::getQuantity).count();
+	    stock.setCurrentCapacity(newCapacityAfterSale);
+	    salesRepo.save(sale);
+	    logger.info("Venda processada com sucesso: {}", sale);
+	    return true;
+	}
